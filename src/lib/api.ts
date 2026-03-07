@@ -1,6 +1,6 @@
 // API configuration
 const API_BASE_URL =
-  import.meta.env.VITE_API_URL ?? 'https://www.buharinasirahmad.best';
+  import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:5001';
 
 /* =======================
    Interfaces (Backend-aligned)
@@ -16,6 +16,13 @@ export interface SummaryData {
 export interface Country {
   code: string;
   name: string;
+
+}
+export interface LandmarkSummary {
+  country: string;
+  territories: number;
+  recognized: number;
+  not_recognized: number;
 }
 
 export interface LossTrendData {
@@ -154,6 +161,9 @@ async function fetchPOST<T>(
 export const api = {
   /* ---- Always safe ---- */
   getSummary: () => fetchGET<SummaryData>('/api/summary'),
+  getLandmarkSummary: () =>
+  fetchGET<LandmarkSummary[]>('/api/landmark-summary'),
+
 
   getCountries: () => fetchGET<string[]>('/api/countries').then(countries => 
   countries.map(name => {

@@ -18,6 +18,7 @@ export default function CountryExplorer() {
   const [searchParams] = useSearchParams();
   const [selectedCountry, setSelectedCountry] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [landmarkData, setLandmarkData] = useState([]);
 
   // Handle country parameter from URL
   useEffect(() => {
@@ -26,6 +27,20 @@ export default function CountryExplorer() {
       setSelectedCountry(decodeURIComponent(countryParam));
     }
   }, [searchParams]);
+
+  //Handle Landmark parameter from URL
+  useEffect(() => {
+  const fetchLandmark = async () => {
+    try {
+      const data = await api.getLandmarkSummary();
+      setLandmarkData(data);
+    } catch (error) {
+      console.error('Error fetching LANDMARK data:', error);
+    }
+  };
+
+  fetchLandmark();
+}, []);
 
   const { data: countries } = useCountries();
   const { data: lossTrend, isLoading: trendLoading } = useLossTrend(selectedCountry);
@@ -66,6 +81,9 @@ export default function CountryExplorer() {
   const displayDrivers = drivers?.map(d => ({ name: d.driver, value: Math.round((d.hectares / drivers.reduce((sum, item) => sum + item.hectares, 0)) * 100) })) || [];
 
   const selectedCountryName = displayCountries.find(c => c.name === selectedCountry)?.name || 'Select Country';
+  const selectedLandmark = landmarkData.find(
+  (d: any) => d.country === selectedCountry
+);
 
   const totalLoss = displayTrend.reduce((sum, d) => sum + d.value, 0);
   const avgLoss = displayTrend.length > 0 ? totalLoss / displayTrend.length : 0;
@@ -163,7 +181,7 @@ export default function CountryExplorer() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         <StatCard
           title="Total Tree Cover Loss"
           value={formatHectares(totalLoss)}
@@ -178,6 +196,35 @@ export default function CountryExplorer() {
           icon={Flame}
           variant="amber"
         />
+        {selectedLandmark && (
+  <>
+        <StatCard
+          title="Indigenous Territories"
+          value={selectedLandmark.territories}
+          subtitle="LANDMARK dataset"
+          icon={Globe}
+          variant="forest"
+        />
+
+        <StatCard
+          title="Recognized Territories"
+          value={selectedLandmark.recognized}
+          subtitle="Acknowledged by government"
+          icon={TreePine}
+          variant="forest"
+        />
+
+        <StatCard
+          title="Unrecognized Territories"
+          value={selectedLandmark.not_recognized}
+          subtitle="Not acknowledged"
+          icon={Flame}
+          variant="amber"
+        />
+  </>
+)}
+
+
       </div>
 
       {/* Charts Grid */}
