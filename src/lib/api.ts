@@ -1,6 +1,5 @@
 // API configuration
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:5001';
+const API_BASE_URL = 'http://98.94.208.181:5000';
 
 /* =======================
    Interfaces (Backend-aligned)
@@ -162,7 +161,7 @@ export const api = {
   /* ---- Always safe ---- */
   getSummary: () => fetchGET<SummaryData>('/api/summary'),
   getLandmarkSummary: () =>
-  fetchGET<LandmarkSummary[]>('/api/landmark-summary'),
+  fetchGET<LandmarkSummary[]>('/api/landmark'),
 
 
   getCountries: () => fetchGET<string[]>('/api/countries').then(countries => 

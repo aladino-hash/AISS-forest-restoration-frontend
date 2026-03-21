@@ -81,9 +81,21 @@ export default function CountryExplorer() {
   const displayDrivers = drivers?.map(d => ({ name: d.driver, value: Math.round((d.hectares / drivers.reduce((sum, item) => sum + item.hectares, 0)) * 100) })) || [];
 
   const selectedCountryName = displayCountries.find(c => c.name === selectedCountry)?.name || 'Select Country';
-  const selectedLandmark = landmarkData.find(
-  (d: any) => d.country === selectedCountry
-);
+  console.log("Selected:", selectedCountry);
+  console.log("Landmark sample:", landmarkData[0]);
+
+  const selectedLandmark = selectedCountry
+  ? landmarkData.find((d: any) => {
+      const selected = selectedCountry.toLowerCase().trim();
+      const country = d.country?.toLowerCase().trim();
+
+      return (
+        country === selected ||
+        country.includes(selected) ||
+        selected.includes(country)
+      );
+    })
+  : null;
 
   const totalLoss = displayTrend.reduce((sum, d) => sum + d.value, 0);
   const avgLoss = displayTrend.length > 0 ? totalLoss / displayTrend.length : 0;
