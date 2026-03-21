@@ -1,5 +1,5 @@
 // API configuration
-const API_BASE_URL = '';
+const API_BASE_URL = window.location.origin;
 
 /* =======================
    Interfaces (Backend-aligned)
