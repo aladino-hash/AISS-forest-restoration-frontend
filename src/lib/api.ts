@@ -1,5 +1,5 @@
 // API configuration
-const API_BASE_URL = 'https://98.94.208.181:5000';
+const API_BASE_URL = '';
 
 /* =======================
    Interfaces (Backend-aligned)
