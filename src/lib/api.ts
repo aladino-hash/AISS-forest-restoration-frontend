@@ -1,5 +1,5 @@
 // API configuration
-const API_BASE_URL = window.location.origin;
+const API_BASE_URL = 'http://localhost:5001';
 
 /* =======================
    Interfaces (Backend-aligned)
@@ -431,6 +431,8 @@ export const api = {
     includePredictions?: boolean;
     language?: string;
   }) => {
+    console.log("🚀 API CALL:", context);
+
     return fetchPOST('/api/recommendations', {
       country: context.country,
       stakeholder: context.stakeholder,
@@ -461,3 +463,12 @@ export const api = {
     return fetchGET('/api/recommendations/templates');
   },
 };
+export async function getSubnationalKPI() {
+  const response = await fetch("http://127.0.0.1:5001/api/subnational-kpi");
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch subnational KPI data");
+  }
+
+  return response.json();
+}

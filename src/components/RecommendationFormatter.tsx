@@ -22,7 +22,7 @@ const RecommendationFormatter: React.FC<RecommendationFormatterProps> = ({
   };
 
   const formatResources = (resources: string[]) => {
-    return resources.join(', ');
+    Array.isArray(resources) ? resources.join(', ') : resources
   };
 
   return (

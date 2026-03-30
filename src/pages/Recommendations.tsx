@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useSearchParams } from "react-router-dom";import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useQuery } from '@tanstack/react-query';
-import { 
+import {
   Brain, 
   Download, 
   Share2, 
@@ -33,6 +33,9 @@ import RecommendationFormatter from '@/components/RecommendationFormatter';
 import './Recommendations.css';
 
 const Recommendations: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const countryParam = searchParams.get("country");
+
   const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [countrySearch, setCountrySearch] = useState<string>('');
   const [selectedStakeholder, setSelectedStakeholder] = useState<StakeholderType>('policy_governance');
@@ -58,15 +61,22 @@ const Recommendations: React.FC = () => {
   const filteredCountries = useMemo(() => countries.filter(country =>
     country.toLowerCase().includes(countrySearch.toLowerCase())
   ), [countries, countrySearch]);
-
-  const { data: recommendations, isLoading, error, refetch } = useRecommendations({
+  console.log("📡 Hook params:", {
     country: selectedCountry,
-    stakeholder: selectedStakeholder,
-    dataRange: { startYear: 2001, endYear: 2024 },
-    includePredictions: true
-  } as RecommendationContext, {
-    enabled: false // Disable automatic fetching
+    stakeholder: selectedStakeholder
   });
+
+  const { data: recommendations, isLoading, error, refetch } = useRecommendations(
+    {
+      country: selectedCountry,
+      stakeholder: selectedStakeholder,
+      dataRange: { startYear: 2001, endYear: 2024 },
+      includePredictions: true
+    } as RecommendationContext,
+    {
+      enabled: false
+    }
+  );
 
   const { invalidateRecommendations } = useInvalidateRecommendations();
 
@@ -114,6 +124,8 @@ ${rec.text}
   };
 
   const generateRecommendations = useCallback(() => {
+    console.log("🔥 Generating for:", selectedCountry);
+
     if (!selectedCountry) {
       toast.error('Please select a country');
       return;
@@ -123,31 +135,26 @@ ${rec.text}
 
   // Handle URL parameters for auto-selection and search
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const countryParam = urlParams.get('country');
-    const stakeholderParam = urlParams.get('stakeholder') as StakeholderType;
+    console.log("🧠 URL country param:", countryParam);
 
-    // Set country if parameter exists and country is valid
+    const stakeholderParam = searchParams.get("stakeholder") as StakeholderType;
+
     if (countryParam && countries.includes(countryParam)) {
-      setSelectedCountry(countryParam);
+        setSelectedCountry(countryParam);
     }
 
-    // Set stakeholder if parameter exists and is valid
     if (stakeholderParam && stakeholderOptions.some(option => option.value === stakeholderParam)) {
-      setSelectedStakeholder(stakeholderParam);
+        setSelectedStakeholder(stakeholderParam);
     }
 
-    // Auto-start search only if both parameters are present and valid
-    if (countryParam && stakeholderParam && 
-        countries.includes(countryParam) && 
-        stakeholderOptions.some(option => option.value === stakeholderParam)) {
-      // Small delay to ensure state is set
-      setTimeout(() => {
-        generateRecommendations();
-      }, 100);
+    if (
+      countryParam &&
+      stakeholderParam &&
+      countries.includes(countryParam) &&
+      stakeholderOptions.some(option => option.value === stakeholderParam)
+    ) {
     }
-  }, [countries, stakeholderOptions, generateRecommendations]); // Re-run when countries data is loaded
-
+  }, [countryParam, searchParams, countries, stakeholderOptions, generateRecommendations]);
   if (error) {
     const isTimeout = (error as Error)?.message?.includes('504') || 
                     (error as Error)?.message?.includes('Gateway Timeout') ||

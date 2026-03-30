@@ -84,7 +84,13 @@ const MapChart = memo(({
   onCountryClick: (country: string) => void;
 }) => {
   const [tooltipContent, setTooltipContent] = useState<{ name: string; value: number } | null>(null);
-  
+  const [peruRegions, setPeruRegions] = useState<any>(null);
+
+  useEffect(() => {
+    fetch('/peru_regions.geojson')
+      .then(res => res.json())
+      .then(data => setPeruRegions(data));
+  }, []);
   // Calculate max value from real data for color scaling
   const maxValue = mapData && mapData.length > 0 
     ? Math.max(...mapData.map(d => d.tree_cover_loss_ha || 0))

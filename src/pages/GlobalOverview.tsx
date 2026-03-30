@@ -1,3 +1,4 @@
+import { getSubnationalKPI } from "@/lib/api";
 import { PageLayout } from '@/components/layout/PageLayout';
 import { StatCard } from '@/components/ui/stat-card';
 import { ChartCard } from '@/components/charts/ChartCard';
@@ -15,7 +16,7 @@ import { api } from '@/lib/api';
 
 export default function GlobalOverview() {
   const navigate = useNavigate();
-  const { data: summary, isLoading: summaryLoading } = useSummary();
+const { data: summary, isLoading: summaryLoading } = useSummary();
   const { data: globalLossTrend, isLoading: globalTrendLoading } = useGlobalLossTrend();
   const { data: globalDrivers, isLoading: globalDriversLoading } = useGlobalDrivers();
   const { data: mapData, isLoading: mapLoading } = useMapData();
@@ -58,6 +59,16 @@ export default function GlobalOverview() {
     };
     fetchPrimaryLoss();
   }, []);
+
+// useEffect(() => {
+//   getSubnationalKPI()
+//     .then(data => {
+//       console.log("SUBNATIONAL DATA:", data);
+//     })
+//     .catch(err => {
+//       console.error("ERROR:", err);
+//     });
+// }, []);
 
   // Fetch top countries data
   useEffect(() => {

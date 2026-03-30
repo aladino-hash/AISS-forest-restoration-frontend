@@ -1,3 +1,4 @@
+import RegionMap from "@/components/RegionMap";
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PageLayout } from '@/components/layout/PageLayout';
@@ -19,6 +20,7 @@ export default function CountryExplorer() {
   const [selectedCountry, setSelectedCountry] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [landmarkData, setLandmarkData] = useState([]);
+  const [showFullData, setShowFullData] = useState(false);
 
   // Handle country parameter from URL
   useEffect(() => {
@@ -72,7 +74,7 @@ export default function CountryExplorer() {
   }, [selectedCountry]);
 
   const displayCountries = countries || [];
-  const filteredCountries = displayCountries.filter(c => 
+  const filteredCountries = displayCountries.filter(c =>
     c.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -111,7 +113,15 @@ export default function CountryExplorer() {
     if (value >= 1000000) return `${(value / 1000000).toFixed(0)}M`;
     return value.toLocaleString();
   };
+  // ✅ Prepare sorted data (latest first)
+  const sortedTrend = [...displayTrend].sort(
+    (a, b) => Number(b.year) - Number(a.year)
+  );
 
+  // ✅ Show only last 5 unless expanded
+  const visibleTrend = showFullData
+    ? sortedTrend
+    : sortedTrend.slice(0, 5);
   return (
     <PageLayout>
       {/* Header */}
@@ -119,7 +129,7 @@ export default function CountryExplorer() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-              Country Explorer
+              Country Explorers
             </h1>
             <p className="text-muted-foreground text-lg">
               Explore detailed deforestation data by country
@@ -135,8 +145,12 @@ export default function CountryExplorer() {
                   <TrendingUp className="h-4 w-4" />
                   AI Predictions for {selectedCountry}
                 </button>
+
                 <button
-                  onClick={() => navigate(`/recommendations?country=${encodeURIComponent(selectedCountry)}`)}
+                  onClick={() => {
+                    alert("CLICK WORKED");
+                  }}
+                  style={{ position: "relative", zIndex: 50 }} // 👈 ADD THIS
                   className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
                 >
                   <Brain className="h-4 w-4" />
@@ -256,24 +270,22 @@ export default function CountryExplorer() {
           )}
         </ChartCard>
 
-        <ChartCard
-          title={`Primary Forest Loss Trend - ${selectedCountryName || 'Select Country'}`}
-          subtitle="Primary forest hectares lost"
-        >
-          {primaryLoading ? (
-            <Skeleton className="h-[300px] w-full" />
-          ) : primaryLossTrend.length === 0 || primaryLossTrend.every(d => d.value === 0) ? (
-            <div className="h-[300px] w-full flex items-center justify-center text-muted-foreground">
-              No primary forest data for this country
-            </div>
-          ) : (
-            <AreaTrendChart
-              data={primaryLossTrend}
-              color="terracotta"
-              formatValue={formatHectares}
-            />
-          )}
-        </ChartCard>
+        {primaryLossTrend && primaryLossTrend.some(d => d.value > 0) && (
+          <ChartCard
+            title={`Primary Forest Loss Trend - ${selectedCountryName || 'Select Country'}`}
+            subtitle="Primary forest hectares lost"
+          >
+            {primaryLoading ? (
+              <Skeleton className="h-[300px] w-full" />
+            ) : (
+              <AreaTrendChart
+                data={primaryLossTrend}
+                color="terracotta"
+                formatValue={formatHectares}
+              />
+            )}
+          </ChartCard>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -314,6 +326,18 @@ export default function CountryExplorer() {
 
       {/* Data Table */}
       <ChartCard title="Yearly Data" subtitle="Detailed breakdown by year">
+        <div className="flex justify-between items-center mb-3">
+          <p className="text-sm text-muted-foreground">
+            Showing {showFullData ? "all years" : "last 5 years"}
+          </p>
+
+          <button
+            onClick={() => setShowFullData(!showFullData)}
+            className="text-sm text-primary font-medium hover:underline"
+          >
+            {showFullData ? "Show less" : "View full history"}
+          </button>
+        </div>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -325,7 +349,7 @@ export default function CountryExplorer() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {displayTrend.reverse().map((row, index) => {
+              {visibleTrend.map((row, index) => {
                 const yearData = displayEmissions.find(e => e.year === row.year);
                 const primaryDriver = displayDrivers.find(d => d.name === (drivers?.find(dr => dr.hectares === Math.max(...drivers.map(dr => dr.hectares)))?.driver || ''))?.name || '';
                 return (
@@ -341,6 +365,12 @@ export default function CountryExplorer() {
           </Table>
         </div>
       </ChartCard>
+
+      {/* 🌍 REGION MAP SECTION */}
+      <div className="mt-10">
+        <h2 className="text-2xl font-bold mb-4">Explore Regions</h2>
+        <RegionMap selectedCountry={selectedCountry} />
+      </div>
     </PageLayout>
   );
 }
