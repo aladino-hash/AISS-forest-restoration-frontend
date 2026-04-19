@@ -1,9 +1,9 @@
+import { API_BASE_URL } from "../lib/api"; // ✅ ADD THIS
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
 
 /**
- * 🧭 Map Controller (NEW)
- * Handles map movement when country changes
+ * 🧭 Map Controller
  */
 function MapController({
   center,
@@ -28,9 +28,6 @@ export default function RegionMap({
 }: {
   selectedCountry: string;
 }) {
-  /**
-   * 🌍 Country config (UPDATED)
-   */
   const countryConfig: Record<
     string,
     { center: [number, number]; zoom: number }
@@ -55,9 +52,6 @@ export default function RegionMap({
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const [regionData, setRegionData] = useState<any>(null);
 
-  /**
-   * 🔥 Region mapping (Portugal only)
-   */
   const regionNameMap: Record<string, string> = {
     "Área Metropolitana do Porto": "Porto",
     "Área Metropolitana de Lisboa": "Lisboa",
@@ -71,7 +65,6 @@ export default function RegionMap({
   useEffect(() => {
     let file = "";
 
-    // 🔥 HARD RESET EVERYTHING FIRST
     setGeoData(null);
     setSelectedRegion(null);
     setRegionData(null);
@@ -85,9 +78,7 @@ export default function RegionMap({
     if (file) {
       fetch(file)
         .then((res) => res.json())
-        .then((data) => {
-          setGeoData(data); // only set AFTER reset
-         });
+        .then((data) => setGeoData(data));
     }
   }, [selectedCountry]);
 
@@ -107,11 +98,7 @@ export default function RegionMap({
         zoom={currentConfig.zoom}
         style={{ height: "400px", width: "100%" }}
       >
-        {/* 🧠 THIS FIXES EVERYTHING */}
-        <MapController
-          center={currentConfig.center}
-          zoom={currentConfig.zoom}
-        />
+        <MapController center={currentConfig.center} zoom={currentConfig.zoom} />
 
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
@@ -130,10 +117,10 @@ export default function RegionMap({
         {/* 🗺️ Regions */}
         {geoData && (
           <GeoJSON
-            key={selectedCountry} // ✅ FORCE REMOUNT
+            key={selectedCountry}
             data={geoData}
             style={(feature: any) => {
-              let region =
+              const region =
                 selectedCountry === "Peru"
                   ? feature.properties.NAME_1
                   : feature.properties.region;
@@ -149,14 +136,11 @@ export default function RegionMap({
             onEachFeature={(feature: any, layer: any) => {
               layer.on({
                 click: async () => {
-                  let region =
+                  const region =
                     selectedCountry === "Peru"
                       ? feature.properties.NAME_1
                       : feature.properties.region;
 
-                  /**
-                   * 🔥 Normalize region
-                   */
                   const normalizedRegion = region
                     .normalize("NFD")
                     .replace(/[\u0300-\u036f]/g, "")
@@ -171,8 +155,9 @@ export default function RegionMap({
                   try {
                     console.log("Clicked region:", mappedRegion);
 
+                    // ✅ FIXED LINE
                     const response = await fetch(
-                      `http://localhost:5001/api/subnational/${selectedCountry}/${mappedRegion}`
+                      `${API_BASE_URL}/api/subnational/${selectedCountry}/${mappedRegion}`
                     );
 
                     const data = await response.json();
@@ -240,7 +225,8 @@ export default function RegionMap({
               🌍 Land Loss: {((latest.tree_loss_ha / latest.area_ha) * 100).toFixed(2)}%
               ({lossKm2.toLocaleString()} km²)
             </p>
-            🔥 Emissions: {formatMillions(latest.carbon_emissions)} tCO₂e
+
+            <p>🔥 Emissions: {formatMillions(latest.carbon_emissions)} tCO₂e</p>
 
             <p>📈 Trend: {trend}</p>
           </div>

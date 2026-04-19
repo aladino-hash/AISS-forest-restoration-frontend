@@ -1,5 +1,5 @@
 // API configuration
-const API_BASE_URL = 'https://www.buharinasirahmad.best/';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 /* =======================
    Interfaces (Backend-aligned)
@@ -464,7 +464,7 @@ export const api = {
   },
 };
 export async function getSubnationalKPI() {
-  const response = await fetch("http://127.0.0.1:5001/api/subnational-kpi");
+  const response = await fetch(`${API_BASE_URL}/api/subnational-kpi`);
 
   if (!response.ok) {
     throw new Error("Failed to fetch subnational KPI data");
