@@ -1,5 +1,5 @@
 // API configuration
-export const API_BASE_URL = 'https://13.60.162.220:5001';
+export const API_BASE_URL = '';
 
 /* =======================
    Interfaces (Backend-aligned)
