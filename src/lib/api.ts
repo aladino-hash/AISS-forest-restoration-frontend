@@ -115,13 +115,15 @@ async function fetchGET<T>(
 async function fetchPOST<T>(
   endpoint: string,
   body: Record<string, string | number | string[]>,
-  timeout: number = 60000 // 60 second timeout for LLM endpoints
+  timeout: number = 60000
 ): Promise<T> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 
   try {
-    const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const url = API_BASE_URL + endpoint;
+
+    const res = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -134,7 +136,9 @@ async function fetchPOST<T>(
 
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.error?.message || `HTTP ${res.status}: ${res.statusText}`);
+      throw new Error(
+        errorData.error?.message || `HTTP ${res.status}: ${res.statusText}`
+      );
     }
 
     return res.json();
@@ -143,10 +147,7 @@ async function fetchPOST<T>(
 
     if (error instanceof Error) {
       if (error.name === 'AbortError') {
-        throw new Error('Request timeout - The AI service is taking longer than expected. Please try again.');
-      }
-      if (error.message.includes('504') || error.message.includes('Gateway Timeout')) {
-        throw new Error('504 Gateway Timeout - The AI service is currently experiencing high demand. Please try again in a few moments.');
+        throw new Error('Request timeout - try again.');
       }
     }
 
