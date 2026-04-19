@@ -1,5 +1,5 @@
 // API configuration
-export const API_BASE_URL = 'http://13.60.162.220:5001';
+export const API_BASE_URL = 'http://13.60.162.220:5001/';
 
 /* =======================
    Interfaces (Backend-aligned)
@@ -95,15 +95,16 @@ async function fetchGET<T>(
   endpoint: string,
   params?: Record<string, string | number>
 ): Promise<T> {
-  const url = new URL(`${API_BASE_URL}${endpoint}`);
+  let url = API_BASE_URL + endpoint;
 
   if (params) {
-    Object.entries(params).forEach(([k, v]) =>
-      url.searchParams.append(k, String(v))
-    );
+    const query = new URLSearchParams(
+      Object.entries(params).map(([k, v]) => [k, String(v)])
+    ).toString();
+    url += `?${query}`;
   }
 
-  const res = await fetch(url.toString());
+  const res = await fetch(url);
   if (!res.ok) {
     throw new Error(`API ${res.status}: ${await res.text()}`);
   }
@@ -139,7 +140,7 @@ async function fetchPOST<T>(
     return res.json();
   } catch (error) {
     clearTimeout(timeoutId);
-    
+
     if (error instanceof Error) {
       if (error.name === 'AbortError') {
         throw new Error('Request timeout - The AI service is taking longer than expected. Please try again.');
@@ -148,7 +149,7 @@ async function fetchPOST<T>(
         throw new Error('504 Gateway Timeout - The AI service is currently experiencing high demand. Please try again in a few moments.');
       }
     }
-    
+
     throw error;
   }
 }
@@ -164,7 +165,7 @@ export const api = {
   fetchGET<LandmarkSummary[]>('/api/landmark'),
 
 
-  getCountries: () => fetchGET<string[]>('/api/countries').then(countries => 
+  getCountries: () => fetchGET<string[]>('/api/countries').then(countries =>
   countries.map(name => {
     // Comprehensive country name to ISO 3166-1 alpha-3 mapping
     const codeMap: { [key: string]: string } = {
@@ -336,7 +337,7 @@ export const api = {
       'Zimbabwe': 'ZWE',
       'Åland': 'ALA',
     };
-    
+
     return {
       code: codeMap[name] || name.substring(0, 3).toUpperCase(),
       name
@@ -382,10 +383,10 @@ export const api = {
   },
 
   getPrimaryLossAllCountries: (yearStart?: number, yearEnd?: number) => {
-    return fetchGET<{country: string; primary_forest_loss_ha: number}[]>('/api/primary-loss-all-countries', 
-      yearStart || yearEnd ? { 
-        year_start: yearStart, 
-        year_end: yearEnd 
+    return fetchGET<{country: string; primary_forest_loss_ha: number}[]>('/api/primary-loss-all-countries',
+      yearStart || yearEnd ? {
+        year_start: yearStart,
+        year_end: yearEnd
       } : undefined
     );
   },
@@ -464,7 +465,7 @@ export const api = {
   },
 };
 export async function getSubnationalKPI() {
-  const response = await fetch(`${API_BASE_URL}/api/subnational-kpi`);
+  const response = await fetch(API_BASE_URL + '/api/subnational-kpi');
 
   if (!response.ok) {
     throw new Error("Failed to fetch subnational KPI data");
