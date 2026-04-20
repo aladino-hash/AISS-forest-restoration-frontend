@@ -1,3 +1,4 @@
+import IntroHero from "./components/IntroHero";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,7 +20,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<GlobalOverview />} />
+          <Route path="/" element={<IntroHero />} />
           <Route path="/country" element={<CountryExplorer />} />
           <Route path="/map" element={<WorldMap />} />
           <Route path="/predictions" element={<Predictions />} />
