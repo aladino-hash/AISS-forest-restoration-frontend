@@ -20,11 +20,17 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          {/* Landing Page */}
           <Route path="/" element={<IntroHero />} />
+
+          {/* Dashboard Pages */}
+          <Route path="/overview" element={<GlobalOverview />} />
           <Route path="/country" element={<CountryExplorer />} />
           <Route path="/map" element={<WorldMap />} />
           <Route path="/predictions" element={<Predictions />} />
           <Route path="/recommendations" element={<Recommendations />} />
+
+          {/* Fallback */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
