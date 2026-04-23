@@ -1,4 +1,5 @@
-import { useSearchParams } from "react-router-dom";import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useSearchParams } from "react-router-dom";
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,7 +22,8 @@ import {
   ChevronDown, 
   ChevronUp,
   Loader2,
-  Search
+  Search,
+  AlertTriangle
 } from 'lucide-react';
 import { useRecommendations, useRecommendationTemplates, useInvalidateRecommendations } from '@/hooks/useRecommendations';
 import { RecommendationContext, StakeholderType } from '@/types/recommendations';
@@ -194,6 +196,34 @@ ${rec.text}
       </PageLayout>
     );
   }
+const parseRecommendation = (text: string) => {
+  const result: any = {};
+
+  const getValue = (label: string) => {
+    const match = text.match(new RegExp(`\\*\\*${label}\\*\\*:([^\\n]+)`));
+    return match ? match[1].trim() : "";
+  };
+
+  result.Objective = getValue("Objective");
+
+  const actionsRaw = getValue("Specific Actions");
+  result["Specific Actions"] = actionsRaw
+    ? actionsRaw.split(/\d+\.\s*/).filter(Boolean)
+    : [];
+
+  result["Implementation Timeframe"] = getValue("Implementation Timeframe");
+
+  const resourcesRaw = getValue("Required Resources");
+  result["Required Resources"] = resourcesRaw
+    ? resourcesRaw.split(',').map(r => r.trim())
+    : [];
+
+  result["Expected Measurable Impact"] = getValue("Expected Measurable Impact");
+
+  result["Supporting Evidence from Data"] = getValue("Supporting Evidence from Data");
+
+  return result;
+};
 
   return (
     <PageLayout>
@@ -406,9 +436,9 @@ ${rec.text}
                               <h4 className="font-semibold text-gray-900 text-lg">Recommendation {index + 1}</h4>
                             </div>
                             
-                            <RecommendationFormatter 
-                              text={rec.text} 
-                              recommendationNumber={index + 1} 
+                            <RecommendationFormatter
+                              text={parseRecommendation(rec.description)}
+                              recommendationNumber={index + 1}
                             />
                           </div>
                         </div>

@@ -13,6 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useNavigate } from 'react-router-dom';
 import { useMapData } from '@/hooks/useForestData';
 import { api } from '@/lib/api';
+import CurimanaMap from '@/components/CurimanaMap';
 
 export default function GlobalOverview() {
   const navigate = useNavigate();
@@ -26,13 +27,14 @@ const { data: summary, isLoading: summaryLoading } = useSummary();
   const [topPrimaryCountries, setTopPrimaryCountries] = useState([]);
   const [topCountriesLoading, setTopCountriesLoading] = useState(false);
 
+  // Then define the constant
   const normalizedSummary = summary
     ? {
       total_countries: summary.countries,
       total_loss_hectares: summary.total_loss,
       total_emissions: summary.total_emissions,
       latest_year: summary.latest_year,
-      earliest_year: 2001, // fixed baseline
+      earliest_year: 2001,
     }
     : null;
 
@@ -447,31 +449,87 @@ const { data: summary, isLoading: summaryLoading } = useSummary();
         </div>
 
         {/* World Map Preview - Full Width */}
+        {/* Yamino Research Site - Replacement for Global Map */}
         <ChartCard
-          title="Global Forest Loss Map"
-          subtitle="Click to explore detailed map view"
+          title="Curimaná Agroforestry Monitoring"
+          subtitle="Live satellite imagery (Sentinel-2 + NDVI)"
         >
-          <div className="relative h-[400px] w-full">
-            {mapLoading ? (
-              <Skeleton className="h-full w-full" />
-            ) : (
-              <div className="h-full w-full flex flex-col items-center justify-center bg-gradient-to-br from-green-50 to-blue-50 rounded-lg border border-border">
-                <Globe className="h-16 w-16 text-green-600 mb-4" />
-                <h3 className="text-lg font-semibold text-foreground mb-2">Interactive World Map</h3>
-                <p className="text-muted-foreground text-center mb-4 px-4">
-                  Explore forest loss data by country with our interactive world map visualization
-                </p>
-                <button
-                  onClick={() => navigate('/map')}
-                  className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-                >
-                  <Globe className="h-4 w-4" />
-                  Open World Map
-                </button>
-              </div>
-            )}
-          </div>
+          <CurimanaMap />
+
         </ChartCard>
+        {/* 🌱 IMPACT STATS */}
+        <div className="mt-10 px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+
+            <div className="bg-green-50 rounded-xl p-6 shadow-sm">
+              <div className="text-2xl font-bold text-green-700">12,450 ha</div>
+              <div className="text-sm text-gray-600 mt-1">Land under restoration</div>
+            </div>
+
+            <div className="bg-blue-50 rounded-xl p-6 shadow-sm">
+              <div className="text-2xl font-bold text-blue-700">8 Countries</div>
+              <div className="text-sm text-gray-600 mt-1">Active monitoring regions</div>
+            </div>
+
+            <div className="bg-yellow-50 rounded-xl p-6 shadow-sm">
+              <div className="text-2xl font-bold text-yellow-700">24/7</div>
+              <div className="text-sm text-gray-600 mt-1">Satellite monitoring</div>
+            </div>
+
+          </div>
+        </div>
+
+
+        {/* 🌍 FEATURED PROJECTS */}
+        <div className="mt-12 px-6">
+          <h2 className="text-xl font-semibold mb-4">Featured Restoration Projects</h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            <div className="bg-white rounded-xl shadow-md overflow-hidden">
+              <img src="/images/project1.jpg" className="h-40 w-full object-cover" />
+              <div className="p-4">
+                <h3 className="font-semibold">Peru Agroforestry Pilot</h3>
+                <p className="text-sm text-gray-600 mt-1">Ucayali, Peru</p>
+                <p className="text-xs text-gray-500 mt-2">1,200 ha restored</p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-md overflow-hidden">
+              <img src="/images/project2.jpg" className="h-40 w-full object-cover" />
+              <div className="p-4">
+                <h3 className="font-semibold">Uganda Restoration Site</h3>
+                <p className="text-sm text-gray-600 mt-1">Northern Uganda</p>
+                <p className="text-xs text-gray-500 mt-2">680 ha restored</p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-md overflow-hidden">
+              <img src="/images/project3.jpg" className="h-40 w-full object-cover" />
+              <div className="p-4">
+                <h3 className="font-semibold">Brazil Regeneration Zone</h3>
+                <p className="text-sm text-gray-600 mt-1">Amazon Basin</p>
+                <p className="text-xs text-gray-500 mt-2">3,400 ha monitored</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+
+        {/* 💡 PURPOSE / STORY */}
+        <div className="mt-12 px-6 mb-12">
+          <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-xl p-6 shadow-sm">
+            <h2 className="text-xl font-semibold mb-3">Why this platform?</h2>
+
+            <p className="text-gray-700 text-sm leading-relaxed max-w-2xl">
+              We combine satellite imagery, machine learning, and local knowledge to
+              identify degraded land and support large-scale ecosystem restoration.
+              This platform helps researchers, NGOs, and communities monitor land health
+              and make informed decisions for sustainable land use.
+            </p>
+          </div>
+        </div>
       </div>
     </PageLayout>
   );

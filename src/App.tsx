@@ -1,9 +1,12 @@
 import IntroHero from "./components/IntroHero";
+import CurimanaMap from "./components/CurimanaMap"; // 👈 ADD THIS
+import Curimana from "./pages/Curimana";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import GlobalOverview from "./pages/GlobalOverview";
 import CountryExplorer from "./pages/CountryExplorer";
 import WorldMap from "./pages/WorldMap";
@@ -20,8 +23,14 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+
           {/* Landing Page */}
           <Route path="/" element={<IntroHero />} />
+
+          <Route path="/curimana" element={<Curimana />} />
+
+          {/* 🔥 NEW: Live Satellite (Curimaná) */}
+          <Route path="/curimana" element={<CurimanaMap />} />
 
           {/* Dashboard Pages */}
           <Route path="/overview" element={<GlobalOverview />} />
@@ -32,6 +41,7 @@ const App = () => (
 
           {/* Fallback */}
           <Route path="*" element={<NotFound />} />
+
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

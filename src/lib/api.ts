@@ -1,5 +1,5 @@
-// API configuration
-export const API_BASE_URL = '';
+// api.ts
+export const API_BASE_URL = 'http://localhost:5001';
 
 /* =======================
    Interfaces (Backend-aligned)

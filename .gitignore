@@ -22,3 +22,19 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Secrets
+.env
+*.pem
+*.key
+
+# Data files (optional but recommended)
+*.csv
+*.json
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environments
+.venv/
+venv/
