@@ -1,6 +1,8 @@
 import IntroHero from "./components/IntroHero";
-import CurimanaMap from "./components/CurimanaMap"; // 👈 ADD THIS
+import CurimanaMap from "./components/CurimanaMap";
 import Curimana from "./pages/Curimana";
+import RestorationMap from "./pages/RestorationMap"; // 👈 NEW
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -27,10 +29,14 @@ const App = () => (
           {/* Landing Page */}
           <Route path="/" element={<IntroHero />} />
 
-          <Route path="/curimana" element={<Curimana />} />
-
-          {/* 🔥 NEW: Live Satellite (Curimaná) */}
+          {/* Satellite Tool (your current working map) */}
           <Route path="/curimana" element={<CurimanaMap />} />
+
+          {/* OPTIONAL: keep this if you still use it */}
+          <Route path="/curimana-page" element={<Curimana />} />
+
+          {/* 🌍 NEW: Restoration Map */}
+          <Route path="/restoration" element={<RestorationMap />} />
 
           {/* Dashboard Pages */}
           <Route path="/overview" element={<GlobalOverview />} />

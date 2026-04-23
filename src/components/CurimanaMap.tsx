@@ -6,10 +6,19 @@ import {
   Popup,
   Marker,
 } from "react-leaflet";
+
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
-// ✅ Click handler
+// ✅ Make Leaflet global BEFORE leaflet-draw
+(window as any).L = L;
+
+import "leaflet-draw/dist/leaflet.draw.css";
+import "leaflet-draw";
+
+/* =========================
+   CLICK HANDLER
+========================= */
 const MapClickHandler = ({ setClickedPoint }: any) => {
   useMapEvents({
     click: async (e) => {
@@ -33,7 +42,9 @@ const MapClickHandler = ({ setClickedPoint }: any) => {
   return null;
 };
 
-// ✅ Map controller
+/* =========================
+   MAP CONTROLLER
+========================= */
 const MapController = ({ userLocation }: any) => {
   const map = useMapEvents({});
 
@@ -46,13 +57,68 @@ const MapController = ({ userLocation }: any) => {
   return null;
 };
 
+/* =========================
+   DRAW CONTROL
+========================= */
+const DrawControl = ({ setPolygon }: any) => {
+  const map = useMapEvents({});
+
+  useEffect(() => {
+    const drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+
+    const drawControl = new L.Control.Draw({
+      draw: {
+        polygon: true,
+        rectangle: false,
+        circle: false,
+        marker: false,
+        polyline: false,
+        circlemarker: false,
+      },
+      edit: {
+        featureGroup: drawnItems,
+      },
+    });
+
+    map.addControl(drawControl);
+
+    const handleCreate = (event: any) => {
+      const layer = event.layer;
+
+      drawnItems.clearLayers();
+      drawnItems.addLayer(layer);
+
+      const geojson = layer.toGeoJSON();
+      setPolygon(geojson);
+
+      console.log("Polygon drawn:", geojson);
+    };
+
+    map.on(L.Draw.Event.CREATED, handleCreate);
+
+    return () => {
+      map.off(L.Draw.Event.CREATED, handleCreate);
+      map.removeControl(drawControl);
+      map.removeLayer(drawnItems);
+    };
+  }, [map, setPolygon]);
+
+  return null;
+};
+
+/* =========================
+   MAIN COMPONENT
+========================= */
 const CurimanaMap = () => {
   const [tileUrl, setTileUrl] = useState<string | null>(null);
   const [clickedPoint, setClickedPoint] = useState<any>(null);
   const [userLocation, setUserLocation] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [polygon, setPolygon] = useState<any>(null);
+  const [polygonAnalysis, setPolygonAnalysis] = useState<any>(null);
 
-  // 🌍 Load NDVI layer
+  /* 🌍 Load NDVI layer */
   useEffect(() => {
     fetch("http://127.0.0.1:5001/api/satellite/curimana")
       .then((res) => res.json())
@@ -60,7 +126,34 @@ const CurimanaMap = () => {
       .catch((err) => console.error("Error fetching tile:", err));
   }, []);
 
-  // 📍 GPS
+  /* 🧠 POLYGON ANALYSIS */
+  useEffect(() => {
+    if (!polygon) return;
+
+    const analyzePolygon = async () => {
+      try {
+        const res = await fetch("http://127.0.0.1:5001/api/ndvi-area", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            geometry: polygon.geometry,
+          }),
+        });
+
+        const data = await res.json();
+        console.log("Polygon analysis:", data);
+        setPolygonAnalysis(data);
+      } catch (err) {
+        console.error("Polygon analysis error:", err);
+      }
+    };
+
+    analyzePolygon();
+  }, [polygon]);
+
+  /* 📍 GPS */
   const handleUseLocation = () => {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -73,7 +166,7 @@ const CurimanaMap = () => {
     );
   };
 
-  // 🔍 Search
+  /* 🔍 SEARCH */
   const handleSearch = async () => {
     if (!searchQuery) return;
 
@@ -94,7 +187,7 @@ const CurimanaMap = () => {
     }
   };
 
-  // 🎨 Marker style
+  /* 🎨 Marker style */
   const getMarkerIcon = (status: string) => {
     let color = "blue";
 
@@ -114,33 +207,29 @@ const CurimanaMap = () => {
   return (
     <div className="relative h-screen w-full overflow-hidden">
 
-      {/* 🔍 SEARCH BAR */}
+      {/* SEARCH */}
       <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] w-[90%] max-w-[360px]">
         <div className="flex bg-white/80 backdrop-blur-md rounded-full shadow-md overflow-hidden">
-
           <input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search city, region, or coordinates..."
+            placeholder="Search location..."
             className="flex-1 px-4 py-2 text-sm outline-none bg-transparent"
           />
-
           <button
             onClick={handleSearch}
-            className="bg-green-600 text-white px-4 text-sm hover:bg-green-700 transition"
+            className="bg-green-600 text-white px-4 text-sm hover:bg-green-700"
           >
             Search
           </button>
-
         </div>
       </div>
 
-      {/* 📍 GPS BUTTON (LEFT SIDE MAP CONTROL) */}
+      {/* GPS */}
       <div className="absolute top-20 left-3 z-[1000]">
         <button
           onClick={handleUseLocation}
-          className="bg-white shadow-md rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-100 transition"
-          title="Go to my location"
+          className="bg-white shadow-md rounded-full w-10 h-10 flex items-center justify-center"
         >
           📍
         </button>
@@ -160,69 +249,56 @@ const CurimanaMap = () => {
 
         <MapClickHandler setClickedPoint={setClickedPoint} />
 
+        <DrawControl setPolygon={setPolygon} />
+
         {clickedPoint && (
           <Marker
             position={[clickedPoint.lat, clickedPoint.lon]}
             icon={getMarkerIcon(clickedPoint.status)}
           >
-            <Popup offset={[0, -20]}>
-              <div className="text-sm max-w-[220px]">
-                <div className="font-semibold mb-1">
-                  NDVI: {clickedPoint.ndvi?.toFixed(2)}
-                </div>
-
-                <div className="mb-2">
-                  <strong>Status:</strong> {clickedPoint.status}
-                </div>
-
-                <div className="text-gray-600 text-xs">
-                  {clickedPoint.ndvi < 0.4 &&
-                    "⚠️ Area likely degraded. Good candidate for restoration."}
-
-                  {clickedPoint.ndvi >= 0.4 &&
-                    clickedPoint.ndvi < 0.6 &&
-                    "🌱 Moderate vegetation. Potential for agroforestry improvement."}
-
-                  {clickedPoint.ndvi >= 0.6 &&
-                    "🌳 Healthy vegetation. Strong conservation status."}
-                </div>
-              </div>
+            <Popup>
+              <strong>NDVI:</strong> {clickedPoint.ndvi?.toFixed(2)} <br />
+              <strong>Status:</strong> {clickedPoint.status}
             </Popup>
           </Marker>
         )}
       </MapContainer>
 
-      {/* 🧠 Instruction */}
-      {!clickedPoint && (
-        <div className="absolute top-[70px] left-1/2 -translate-x-1/2 z-[1000] bg-white/70 backdrop-blur-md px-4 py-2 rounded-full text-sm shadow-md text-gray-700">
-          👉 Click anywhere to analyze vegetation
+      {/* INSTRUCTION */}
+      {!clickedPoint && !polygon && (
+        <div className="absolute top-[70px] left-1/2 -translate-x-1/2 z-[1000] bg-white/70 px-4 py-2 rounded-full text-sm shadow-md">
+          👉 Click or draw a polygon
         </div>
       )}
 
-      {/* 🟩 Legend */}
-      <div className="pointer-events-none absolute bottom-4 right-4 z-[1000] bg-white/80 backdrop-blur-sm p-3 rounded-lg shadow text-xs">
+      {/* POLYGON STATUS */}
+      {polygon && !polygonAnalysis && (
+        <div className="absolute top-[70px] left-1/2 -translate-x-1/2 z-[1000] bg-green-600 text-white px-4 py-2 rounded-full text-sm shadow-md">
+          ✅ Area selected — analyzing...
+        </div>
+      )}
+
+      {/* ANALYSIS PANEL */}
+      {polygonAnalysis && (
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000]
+          bg-white/90 px-5 py-4 rounded-xl shadow-lg text-sm w-[260px]">
+
+          <div className="font-semibold mb-2">📊 Land Analysis</div>
+
+          <div><strong>NDVI:</strong> {polygonAnalysis.ndvi?.toFixed(2)}</div>
+          <div><strong>Status:</strong> {polygonAnalysis.status}</div>
+
+        </div>
+      )}
+
+      {/* LEGEND */}
+      <div className="absolute bottom-4 right-4 z-[1000] bg-white/80 p-3 rounded-lg shadow text-xs">
         <div className="font-semibold mb-2">NDVI</div>
-
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-red-500"></div>
-          <span>Low vegetation</span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-yellow-400"></div>
-          <span>Moderate</span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-green-600"></div>
-          <span>Healthy</span>
-        </div>
+        <div className="flex gap-2"><div className="w-4 h-4 bg-red-500" />Low</div>
+        <div className="flex gap-2"><div className="w-4 h-4 bg-yellow-400" />Moderate</div>
+        <div className="flex gap-2"><div className="w-4 h-4 bg-green-600" />Healthy</div>
       </div>
 
-      {/* Attribution */}
-      <div className="pointer-events-none absolute bottom-1 left-2 text-[10px] text-gray-400 opacity-90 z-[1000]">
-        © OpenStreetMap contributors
-      </div>
     </div>
   );
 };
