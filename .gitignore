@@ -38,3 +38,5 @@ __pycache__/
 # Virtual environments
 .venv/
 venv/
+public/tiles/
+public/video/FranciscoVideo.mp4
