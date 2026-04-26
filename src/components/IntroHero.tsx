@@ -2,15 +2,6 @@ import React from 'react';
 import { ArrowRight, BarChart3, Map } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-// Custom Eye-Leaf Logo
-const BrandLogo = ({ color }: { color: string }) => (
-  <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M50 10C50 10 85 30 85 55C85 80 50 90 50 90C50 90 15 80 15 55C15 30 50 10 50 10Z" stroke={color} strokeWidth="4" />
-    <path d="M30 55C30 55 40 40 50 40C60 40 70 55 70 55C70 55 60 70 50 70C40 70 30 55 30 55Z" stroke={color} strokeWidth="3" />
-    <circle cx="50" cy="55" r="6" fill={color} />
-  </svg>
-);
-
 export default function IntroHero() {
   const navigate = useNavigate();
 
@@ -35,18 +26,33 @@ export default function IntroHero() {
         zIndex: 100,
         background: "linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, transparent 100%)"
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-          <BrandLogo color={accentColor} />
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+
+          {/* ✅ BIGGER LOGO */}
+          <img
+            src="/images/logo.png"
+            alt="Fynos AI Logo"
+            style={{
+              height: "64px",   // 🔥 bigger
+              width: "auto",
+              display: "block"
+            }}
+          />
+
+          {/* ✅ TEXT (KEPT + STYLED) */}
           <span style={{
             color: "white",
-            fontWeight: 800,
-            letterSpacing: "2.5px",
-            fontSize: "1.2rem",
-            fontFamily: "monospace",
-            textTransform: "uppercase"
+            fontWeight: 700,
+            letterSpacing: "2px",
+            fontSize: "1.4rem",
+            fontFamily: "Inter, sans-serif",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px"
           }}>
-            ForestWatch <span style={{ color: accentColor }}>AI</span>
+            FYNOS <span style={{ color: "#10b981" }}>AI</span>
           </span>
+
         </div>
       </nav>
 
@@ -99,7 +105,7 @@ export default function IntroHero() {
           See beyond the <span style={{ fontWeight: 600 }}>trees.</span>
         </h1>
 
-        {/* 🔥 NEW HINT TEXT (THIS IS WHAT YOU WANTED) */}
+        {/* SUBTEXT */}
         <p style={{
           color: "rgba(255,255,255,0.8)",
           fontSize: "0.95rem",
@@ -180,6 +186,37 @@ export default function IntroHero() {
           >
             Live Satellite
             <Map size={18} />
+          </button>
+
+          {/* Restoration */}
+          <button
+            onClick={() => navigate('/restoration')}
+            style={{
+              backgroundColor: "transparent",
+              color: "#10b981",
+              border: "1px solid #10b981",
+              padding: "14px 28px",
+              fontSize: "0.85rem",
+              fontWeight: 700,
+              cursor: "pointer",
+              letterSpacing: "2px",
+              textTransform: "uppercase",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              backdropFilter: "blur(6px)"
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = "#10b981";
+              e.currentTarget.style.color = "white";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = "#10b981";
+            }}
+          >
+            Restoration Intelligence
+            <BarChart3 size={18} />
           </button>
 
         </div>

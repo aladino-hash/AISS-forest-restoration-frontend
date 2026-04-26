@@ -26,6 +26,9 @@ const { data: summary, isLoading: summaryLoading } = useSummary();
   const [topCountries, setTopCountries] = useState([]);
   const [topPrimaryCountries, setTopPrimaryCountries] = useState([]);
   const [topCountriesLoading, setTopCountriesLoading] = useState(false);
+  // 🔥 NEW: TERRAIN INTELLIGENCE STATE
+  const [terrainData, setTerrainData] = useState<any>(null);
+  const [terrainLoading, setTerrainLoading] = useState(false);
 
   // Then define the constant
   const normalizedSummary = summary
@@ -81,7 +84,7 @@ const { data: summary, isLoading: summaryLoading } = useSummary();
         if (mapData && mapData.length > 0) {
           // Group by country and sum total loss
           const countryLoss = {};
-          
+
           mapData.forEach(item => {
             if (item.tree_cover_loss_ha > 0) {
               if (!countryLoss[item.country]) {
@@ -90,23 +93,23 @@ const { data: summary, isLoading: summaryLoading } = useSummary();
               countryLoss[item.country] += item.tree_cover_loss_ha;
             }
           });
-          
+
           // Sort and get top 10 for tree cover loss
           const sortedTreeLoss = Object.entries(countryLoss)
             .sort(([,a], [,b]) => (b as number) - (a as number))
             .slice(0, 10)
-            .map(([country, loss]) => ({ 
-              name: formatCountryName(country), 
+            .map(([country, loss]) => ({
+              name: formatCountryName(country),
               value: loss as number,
               fullName: country
             }));
-          
+
           setTopCountries(sortedTreeLoss);
-          
+
           // Fetch primary forest data for all countries in one call
           try {
             const primaryData = await api.getPrimaryLossAllCountries(2001, 2024);
-            
+
             // Process primary forest data
             const sortedPrimaryLoss = primaryData
               .filter(item => item.primary_forest_loss_ha > 0)
@@ -117,7 +120,7 @@ const { data: summary, isLoading: summaryLoading } = useSummary();
               }))
               .sort((a, b) => b.value - a.value)
               .slice(0, 10);
-            
+
             setTopPrimaryCountries(sortedPrimaryLoss);
           } catch (primaryError) {
             console.error('Error fetching primary forest data:', primaryError);
@@ -132,11 +135,47 @@ const { data: summary, isLoading: summaryLoading } = useSummary();
         setTopCountriesLoading(false);
       }
     };
-    
+
     if (mapData) {
       fetchTopCountries();
     }
   }, [mapData]);
+
+  // 🔥 NEW: FETCH TERRAIN (SLOPE) DATA
+  useEffect(() => {
+    const fetchTerrain = async () => {
+      setTerrainLoading(true);
+      try {
+        const res = await fetch("http://127.0.0.1:5001/api/ndvi-area", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            geometry: {
+              type: "Polygon",
+              coordinates: [[
+                [-74.804, -8.4145],
+                [-74.802, -8.4145],
+                [-74.802, -8.4165],
+                [-74.804, -8.4165]
+              ]]
+            },
+            region: "lowland"
+          })
+        });
+
+        const data = await res.json();
+        setTerrainData(data);
+      } catch (err) {
+        console.error("Terrain fetch error:", err);
+      } finally {
+        setTerrainLoading(false);
+      }
+    };
+
+    fetchTerrain();
+  }, []);
 
   const formatHectares = (value: number) => {
     if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M ha`;
@@ -149,7 +188,7 @@ const { data: summary, isLoading: summaryLoading } = useSummary();
     if (name.length <= 12) {
       return name;
     }
-    
+
     // Smart abbreviations for long country names
     const abbreviations = {
       'Democratic Republic Of The Congo': 'DRC',
@@ -258,7 +297,7 @@ const { data: summary, isLoading: summaryLoading } = useSummary();
       'Nauru': 'NR',
       'Tuvalu': 'TV'
     };
-    
+
     return abbreviations[name] || name;
   };
 
@@ -451,10 +490,13 @@ const { data: summary, isLoading: summaryLoading } = useSummary();
         {/* World Map Preview - Full Width */}
         {/* Yamino Research Site - Replacement for Global Map */}
         <ChartCard
-          title="Curimaná Agroforestry Monitoring"
+          title="Amazon Rainforest Monitoring"
           subtitle="Live satellite imagery (Sentinel-2 + NDVI)"
         >
-          <CurimanaMap />
+          {/* 🔥 LIMIT HEIGHT ONLY IN OVERVIEW (does NOT affect real map page) */}
+          <div className="h-[350px] rounded-lg overflow-hidden">
+            <CurimanaMap />
+          </div>
 
         </ChartCard>
         {/* 🌱 IMPACT STATS */}
@@ -480,36 +522,111 @@ const { data: summary, isLoading: summaryLoading } = useSummary();
         </div>
 
 
-        {/* 🌍 FEATURED PROJECTS */}
+        {/* 🌍 FEATURED PROJECTS — CLICKABLE + CINEMATIC */}
         <div className="mt-12 px-6">
-          <h2 className="text-xl font-semibold mb-4">Featured Restoration Projects</h2>
+          <h2 className="text-xl font-semibold mb-4">
+            Featured Restoration Projects
+          </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-              <img src="/images/project1.jpg" className="h-40 w-full object-cover" />
+            {/* 🌱 CAMPO VERDE */}
+            <div
+              onClick={() => navigate('/restoration', { state: { farm: 'campo' } })}
+              className="group cursor-pointer bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 active:scale-[0.98]"
+            >
+              {/* IMAGE WRAPPER */}
+              <div className="relative overflow-hidden">
+                <img
+                  src="/images/Francisco.JPG"
+                  className="h-40 w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+
+                {/* 🔥 CINEMATIC OVERLAY */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
+
+                {/* 🔥 TOP TAG */}
+                <div className="absolute top-3 left-3 bg-green-600 text-white text-[10px] px-2 py-1 rounded-full shadow">
+                  Agroforestry Pilot
+                </div>
+              </div>
+
+              {/* CONTENT */}
               <div className="p-4">
-                <h3 className="font-semibold">Peru Agroforestry Pilot</h3>
+                <h3 className="font-semibold text-gray-900">
+                  Campo Verde Farm
+                </h3>
+
+                <p className="text-sm text-gray-600 mt-1">
+                  Ucayali, Peru
+                </p>
+
+                <p className="text-xs text-gray-500 mt-2">
+                  Drone-mapped • Ready for restoration
+                </p>
+
+                {/* 🔥 CTA */}
+                <div className="mt-3 text-sm font-medium text-green-600 flex items-center gap-1 group-hover:gap-2 transition-all">
+                  View Project →
+                </div>
+              </div>
+            </div>
+
+
+            {/* 🌿 YAMINO */}
+            <div
+              onClick={() => navigate('/restoration', { state: { farm: 'yamino' } })}
+              className="group cursor-pointer bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+            >
+              <img
+                src="/images/Yamino.JPG"
+                className="h-40 w-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+
+              <div className="p-4">
+                <div className="text-xs text-emerald-600 font-medium mb-1">
+                  🌿 Indigenous Territory
+                </div>
+
+                <h3 className="font-semibold">Yamino Territory</h3>
                 <p className="text-sm text-gray-600 mt-1">Ucayali, Peru</p>
-                <p className="text-xs text-gray-500 mt-2">1,200 ha restored</p>
+
+                <p className="text-xs text-gray-500 mt-2">
+                  Under ecological analysis
+                </p>
+
+                <div className="mt-3 text-sm font-medium text-emerald-600 group-hover:underline">
+                  Explore Area →
+                </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-              <img src="/images/project2.jpg" className="h-40 w-full object-cover" />
-              <div className="p-4">
-                <h3 className="font-semibold">Uganda Restoration Site</h3>
-                <p className="text-sm text-gray-600 mt-1">Northern Uganda</p>
-                <p className="text-xs text-gray-500 mt-2">680 ha restored</p>
-              </div>
-            </div>
 
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-              <img src="/images/project3.jpg" className="h-40 w-full object-cover" />
+            {/* 🌳 CURIMANÁ */}
+            <div
+              onClick={() => navigate('/restoration', { state: { farm: 'curimana' } })}
+              className="group cursor-pointer bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+            >
+              <img
+                src="/images/Curimana.JPG"
+                className="h-40 w-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+
               <div className="p-4">
-                <h3 className="font-semibold">Brazil Regeneration Zone</h3>
-                <p className="text-sm text-gray-600 mt-1">Amazon Basin</p>
-                <p className="text-xs text-gray-500 mt-2">3,400 ha monitored</p>
+                <div className="text-xs text-blue-600 font-medium mb-1">
+                  🌳 Community Restoration
+                </div>
+
+                <h3 className="font-semibold">Curimaná Association</h3>
+                <p className="text-sm text-gray-600 mt-1">Ucayali, Peru</p>
+
+                <p className="text-xs text-gray-500 mt-2">
+                  Monitoring & regeneration
+                </p>
+
+                <div className="mt-3 text-sm font-medium text-blue-600 group-hover:underline">
+                  Open Monitoring →
+                </div>
               </div>
             </div>
 
@@ -529,6 +646,61 @@ const { data: summary, isLoading: summaryLoading } = useSummary();
               and make informed decisions for sustainable land use.
             </p>
           </div>
+
+          {/* 👥 TEAM SECTION */}
+          <div className="mt-16 px-6 mb-16">
+            <h2 className="text-xl font-semibold mb-4">
+              The Team Behind the Platform
+            </h2>
+
+            <p className="text-sm text-gray-600 mb-6 max-w-2xl">
+              Built by a multidisciplinary team working across AI, remote sensing,
+              and ecosystem restoration to bridge technology with real-world impact.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+              {/* 👤 TEAM MEMBER 1 */}
+              <div className="bg-white rounded-xl shadow-md p-5 text-center">
+                <img
+                  src="/images/team1.jpg"
+                  className="w-24 h-24 mx-auto rounded-full object-cover mb-3"
+                />
+                <h3 className="font-semibold">Your Name</h3>
+                <p className="text-xs text-gray-500">Founder • AI & Strategy</p>
+                <p className="text-xs text-gray-400 mt-2">
+                  Building intelligent systems for forest restoration.
+                </p>
+              </div>
+
+              {/* 👤 TEAM MEMBER 2 */}
+              <div className="bg-white rounded-xl shadow-md p-5 text-center">
+                <img
+                  src="/images/team2.jpg"
+                  className="w-24 h-24 mx-auto rounded-full object-cover mb-3"
+                />
+                <h3 className="font-semibold">Field Partner</h3>
+                <p className="text-xs text-gray-500">Agroforestry Specialist</p>
+                <p className="text-xs text-gray-400 mt-2">
+                  On-the-ground expertise in sustainable land use systems.
+                </p>
+              </div>
+
+              {/* 👤 TEAM MEMBER 3 */}
+              <div className="bg-white rounded-xl shadow-md p-5 text-center">
+                <img
+                  src="/images/team3.jpg"
+                  className="w-24 h-24 mx-auto rounded-full object-cover mb-3"
+                />
+                <h3 className="font-semibold">Remote Sensing Lead</h3>
+                <p className="text-xs text-gray-500">GIS & Satellite Analysis</p>
+                <p className="text-xs text-gray-400 mt-2">
+                  Transforming satellite data into actionable insights.
+                </p>
+              </div>
+
+              </div>
+            </div>
         </div>
       </div>
     </PageLayout>

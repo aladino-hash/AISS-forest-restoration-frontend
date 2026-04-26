@@ -1,68 +1,41 @@
-import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, useGLTF } from "@react-three/drei";
-import { Suspense, useMemo, useRef } from "react";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, useGLTF, Environment } from "@react-three/drei";
+import { Suspense, useMemo } from "react";
 
 /* =========================
-   MODEL (SAFE SETUP)
+   MODEL COMPONENT (DYNAMIC)
 ========================= */
-const Model = () => {
-  const gltf = useGLTF(
-    "/models/francisco/Campo-Verde-4-27-2025-textured_model.glb"
-  );
+const Model = ({ modelType = "basic" }: { modelType?: "basic" | "advanced" }) => {
+  // ✅ SWITCH BETWEEN BASIC AND ADVANCED MODEL
+  const modelPath =
+    modelType === "advanced"
+      ? "/models/francisco/francisco_advanced.glb" // 🔥 YOUR NEW MODEL
+      : "/models/francisco/Campo-Verde-4-27-2025-textured_model.glb"; // EXISTING
 
-  const scene = useMemo(() => {
-    const cloned = gltf.scene.clone(true);
+  const gltf = useGLTF(modelPath);
 
-    cloned.rotation.x = -Math.PI / 2;
-    cloned.scale.set(3, 3, 3);
+  // ✅ Clone to avoid mutation issues (VERY IMPORTANT)
+  const scene = useMemo(() => gltf.scene.clone(true), [gltf]);
 
-    return cloned;
-  }, [gltf]);
+  // ✅ FIX ORIENTATION (from CloudCompare)
+  scene.rotation.x = -Math.PI / 2;
+
+  // ✅ SCALE (adjust if needed)
+  scene.scale.set(3, 3, 3);
 
   return <primitive object={scene} />;
 };
 
 /* =========================
-   CONTROLS WITH DAMPING FIX
-========================= */
-const Controls = () => {
-  const controlsRef = useRef<any>();
-
-  useFrame(() => {
-    if (controlsRef.current) {
-      controlsRef.current.update(); // 🔥 REQUIRED for damping
-    }
-  });
-
-  return (
-    <OrbitControls
-      ref={controlsRef}
-      target={[0, 0, 0]}
-
-      enablePan={true}
-      enableZoom={true}
-      enableRotate={true}
-
-      enableDamping={true}
-      dampingFactor={0.06}
-
-      rotateSpeed={0.35}
-      zoomSpeed={0.6}
-
-      maxDistance={1200}
-      minDistance={20}
-
-      // 🔥 INSANE LEVEL CINEMATIC
-      autoRotate={true}
-      autoRotateSpeed={0.3}
-    />
-  );
-};
-
-/* =========================
    MAIN 3D VIEW
 ========================= */
-const Drone3D = ({ fullscreen = false }: any) => {
+const Drone3D = ({
+  fullscreen = false,
+  model = "basic", // 🔥 NEW PROP (basic | advanced)
+}: {
+  fullscreen?: boolean;
+  model?: "basic" | "advanced";
+}) => {
   return (
     <div
       className={`w-full ${
@@ -71,28 +44,70 @@ const Drone3D = ({ fullscreen = false }: any) => {
     >
       <Canvas
         camera={{
-          position: [0, 220, 350], // 🔥 PERFECT DISTANCE
+          position: [0, 150, 250],
           fov: 45,
         }}
-        style={{ background: "#cfe8ff" }}
+        style={{ background: "#0b1d2a" }} // 🔥 DARK CINEMATIC BACKGROUND
       >
-        {/* LIGHTING */}
-        <ambientLight intensity={1.2} />
-        <directionalLight position={[100, 120, 100]} intensity={1.5} />
+        {/* =========================
+            LIGHTING (IMPROVED)
+        ========================== */}
 
-        {/* GROUND */}
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3, 0]}>
-          <planeGeometry args={[1200, 1200]} />
-          <meshStandardMaterial color="#dff5d8" />
+        {/* Soft global light */}
+        <ambientLight intensity={0.8} />
+
+        {/* Sun light */}
+        <directionalLight
+          position={[100, 150, 100]}
+          intensity={1.5}
+          castShadow
+        />
+
+        {/* Fill light (reduces harsh shadows) */}
+        <directionalLight
+          position={[-80, 80, -80]}
+          intensity={0.6}
+        />
+
+        {/* Environment lighting (REALISM BOOST) */}
+        <Environment preset="forest" />
+
+        {/* =========================
+            GROUND (SUBTLE)
+        ========================== */}
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, 0]}>
+          <planeGeometry args={[1000, 1000]} />
+          <meshStandardMaterial color="#1a2e1a" />
         </mesh>
 
-        {/* MODEL */}
+        {/* =========================
+            MODEL
+        ========================== */}
         <Suspense fallback={null}>
-          <Model />
+          <Model modelType={model} />
         </Suspense>
 
-        {/* CONTROLS */}
-        <Controls />
+        {/* =========================
+            CONTROLS (CINEMATIC)
+        ========================== */}
+        <OrbitControls
+          target={[0, 0, 0]}
+          enablePan={true}
+          enableZoom={true}
+          enableRotate={true}
+          enableDamping={true}
+          dampingFactor={0.08}
+
+          // 🔥 CINEMATIC AUTO ROTATION
+          autoRotate={model === "advanced"} // only for advanced view
+          autoRotateSpeed={0.4}
+
+          rotateSpeed={0.4}
+          zoomSpeed={0.6}
+
+          minDistance={20}
+          maxDistance={800}
+        />
       </Canvas>
     </div>
   );
@@ -100,6 +115,13 @@ const Drone3D = ({ fullscreen = false }: any) => {
 
 export default Drone3D;
 
+/* =========================
+   PRELOAD (PERFORMANCE BOOST)
+========================= */
 useGLTF.preload(
   "/models/francisco/Campo-Verde-4-27-2025-textured_model.glb"
+);
+
+useGLTF.preload(
+  "/models/francisco/francisco_advanced.glb"
 );
