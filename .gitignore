@@ -1,4 +1,7 @@
+# =========================
 # Logs
+# =========================
+
 logs
 *.log
 npm-debug.log*
@@ -7,36 +10,77 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# =========================
+# Node / Build
+# =========================
+
 node_modules
 dist
 dist-ssr
 *.local
 
+# =========================
 # Editor directories and files
+# =========================
+
 .vscode/*
 !.vscode/extensions.json
 .idea
+
 .DS_Store
+Thumbs.db
+
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# =========================
 # Secrets
+# =========================
+
 .env
 *.pem
 *.key
 
-# Data files (optional but recommended)
-*.csv
-*.json
+# =========================
+# Data files
+# =========================
 
+*.csv
+
+# =========================
 # Python
+# =========================
+
 __pycache__/
 *.pyc
 
+# =========================
 # Virtual environments
+# =========================
+
 .venv/
 venv/
+
+# =========================
+# GIS / Raster / QGIS
+# =========================
+
+*.tif
+*.tiff
+*.qmd
+*.qgz
+*.gpkg
+*.aux.xml
+*.ovr
+
+# GIS processing folders
+public/QGIS_GEE_FARO/
+
+# Tile exports (keep local)
 public/tiles/
+
+# Large media
 public/video/FranciscoVideo.mp4

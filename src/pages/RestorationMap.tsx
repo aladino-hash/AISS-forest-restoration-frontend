@@ -120,9 +120,52 @@ const RestorationMap = () => {
   const [activeLayer, setActiveLayer] = useState("rgb");
   const [show3D, setShow3D] = useState(false);
   const [flyTarget, setFlyTarget] = useState<any>(null);
+  // 🌱 NEW — restoration flow state (STEP 2)
+  const [restorationStarted, setRestorationStarted] = useState(false);
+  // 🌱 NEW — store created project (STEP 3)
+  const [createdProject, setCreatedProject] = useState<any>(null);
   // 🔥 NEW: 3D model switch (DO NOT REMOVE)
   const [modelType, setModelType] = useState<"basic" | "advanced">("basic");
+  /* =========================
+     🧠 SMART PROVIDER MATCHING (STEP 5)
+  ========================= */
+  const getProviders = (ecosystem: string) => {
+    if (ecosystem === "purma") {
+      return [
+        { name: "🌱 Agroforestry Team", status: "Matched" },
+        { name: "🌿 Native Species Nursery", status: "Available" },
+        { name: "👷 Field Implementation Crew", status: "Pending" },
+      ];
+    }
 
+    if (ecosystem === "pastizales") {
+      return [
+        { name: "🌾 Soil Recovery Experts", status: "Matched" },
+        { name: "🐄 Silvopasture Specialists", status: "Available" },
+        { name: "🚜 Land Preparation Team", status: "Pending" },
+      ];
+    }
+
+    if (ecosystem === "bajiales") {
+      return [
+        { name: "💧 Hydrology Engineers", status: "Matched" },
+        { name: "🌿 Wetland Restoration Team", status: "Available" },
+        { name: "🦆 Biodiversity Monitoring", status: "Pending" },
+      ];
+    }
+
+    if (ecosystem === "bosque_alto") {
+      return [
+        { name: "🌳 Conservation Specialists", status: "Matched" },
+        { name: "🧬 Biodiversity Experts", status: "Available" },
+        { name: "📡 Monitoring Team", status: "Pending" },
+      ];
+    }
+
+    return [
+      { name: "🔧 General Restoration Team", status: "Available" },
+    ];
+  };
   const campoVerdePolygon = [
     [-8.4145, -74.8040],
     [-8.4145, -74.8020],
@@ -259,7 +302,7 @@ const RestorationMap = () => {
     >
       {/* LAYER SWITCH */}
       <div className="absolute top-4 left-16 z-[1000] bg-white shadow-md rounded-lg p-2 flex gap-2">
-        {["rgb", "ndvi", "dsm"].map((layer) => (
+        {["rgb", "ndvi", "dsm", "gee"].map((layer) => (
           <button
             key={layer}
             onClick={() => setActiveLayer(layer)}
@@ -269,7 +312,9 @@ const RestorationMap = () => {
                 : "bg-gray-100"
             }`}
           >
-            {layer.toUpperCase()}
+          {/* ✅ STEP 1: FRIENDLY NAME */}
+            {layer === "gee" ? "SATELLITE" : layer.toUpperCase()}
+
           </button>
         ))}
       </div>
@@ -445,6 +490,38 @@ const RestorationMap = () => {
           <p className="text-sm text-gray-600 mt-3">
             {activeProject.description}
           </p>
+
+          {/* =========================
+               🚀 START RESTORATION CTA (STEP 1)
+          ========================= */}
+          <button
+            className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition-all"
+            onClick={() => {
+              console.log("Start restoration clicked for:", activeProject);
+
+              // 🌱 CREATE PROJECT OBJECT (STEP 3)
+              // 🔥 FIX: always use latest ecosystem safely
+              const ecosystemType = analysis?.ecosystem_type || activeProject?.ecosystem_type || "unknown";
+
+              const newProject = {
+                id: Date.now(),
+                name: activeProject.name,
+                polygon: activeProject.polygon,
+
+                // ✅ FIXED
+                ecosystem: ecosystemType,
+
+                ndvi: analysis?.ndvi,
+                status: "planning",
+                createdAt: new Date(),
+              };
+
+              setCreatedProject(newProject);
+              setRestorationStarted(true);
+            }}
+          >
+            🌱 Start Restoration Plan
+          </button>
 
           {/* 3D */}
           <Drone3D
@@ -669,6 +746,57 @@ const RestorationMap = () => {
 
           {/* PIPELINE */}
           <Pipeline current={activeProject.stage} />
+          {/* =========================
+             🌱 RESTORATION CONFIRMATION (STEP 2)
+          ========================= */}
+          {restorationStarted && createdProject && (
+            <div className="mt-6 bg-green-50 border border-green-200 rounded-lg p-4">
+              <div className="text-sm text-green-700 font-semibold mb-2">
+                🌱 Restoration Project Created
+              </div>
+
+              <div className="text-xs text-gray-700 space-y-1">
+                <div><b>Name:</b> {createdProject.name}</div>
+                <div><b>Status:</b> {createdProject.status}</div>
+                <div><b>Ecosystem:</b> {createdProject.ecosystem || "Unknown"}</div>
+              </div>
+            </div>
+          )}
+
+          {/* =========================
+               🔌 PROVIDER MATCHING (STEP 4)
+            ========================= */}
+            {restorationStarted && createdProject && (
+            <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+
+              <div className="text-sm text-blue-700 font-semibold mb-2">
+                🔌 Recommended Providers
+              </div>
+
+              <div className="text-xs text-gray-700 space-y-2">
+
+                {getProviders(createdProject.ecosystem).map((p: any, i: number) => (
+                  <div key={i} className="flex justify-between items-center">
+                    <span>{p.name}</span>
+
+                    <span
+                      className={`font-medium ${
+                        p.status === "Matched"
+                          ? "text-green-600"
+                          : p.status === "Available"
+                          ? "text-blue-600"
+                          : "text-yellow-600"
+                      }`}
+                    >
+                      {p.status}
+                    </span>
+                  </div>
+                ))}
+
+              </div>
+
+            </div>
+          )}
 
         </div>
       )}
