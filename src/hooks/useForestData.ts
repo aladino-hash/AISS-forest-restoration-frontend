@@ -15,6 +15,13 @@ export function useCountries() {
   });
 }
 
+export function useCountryIntelligence() {
+  return useQuery({
+    queryKey: ['country-intelligence'],
+    queryFn: api.getCountryIntelligence,
+  });
+}
+
 export function useLossTrend(country?: string) {
   return useQuery({
     queryKey: ['loss-trend', country],

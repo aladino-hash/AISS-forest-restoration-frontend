@@ -11,15 +11,20 @@ interface StatCardProps {
     value: number;
     isPositive?: boolean;
   };
-  variant?: 'default' | 'forest' | 'amber' | 'ocean';
+  variant?: 'default' | 'forest' | 'amber' | 'ocean' | 'muted';
   className?: string;
 }
 
 const variantStyles = {
   default: 'bg-card',
+
   forest: 'gradient-forest text-primary-foreground',
+
   amber: 'gradient-sunset text-primary-foreground',
+
   ocean: 'gradient-ocean text-primary-foreground',
+
+  muted: 'bg-muted border border-border text-muted-foreground',
 };
 
 export function StatCard({
@@ -31,7 +36,10 @@ export function StatCard({
   variant = 'default',
   className,
 }: StatCardProps) {
-  const isGradient = variant !== 'default';
+  const isGradient =
+    variant === 'forest' ||
+    variant === 'amber' ||
+    variant === 'ocean';
 
   return (
     <div

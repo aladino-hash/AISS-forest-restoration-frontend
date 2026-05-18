@@ -77,10 +77,15 @@ venv/
 *.ovr
 
 # GIS processing folders
-public/QGIS_GEE_FARO/
+local_research_assets/QGIS_GEE_FARO/
+local_research_assets/
 
 # Tile exports (keep local)
 public/tiles/
 
 # Large media
 public/video/FranciscoVideo.mp4
+# Local AI / ML models
+models/
+# Jupyter notebooks
+*.ipynb

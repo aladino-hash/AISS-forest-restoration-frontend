@@ -8,7 +8,13 @@ import { DonutChart, DonutLegend } from '@/components/charts/DonutChart';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useCountries, useLossTrend, useEmissions, useDrivers } from '@/hooks/useForestData';
+import {
+  useCountries,
+  useLossTrend,
+  useEmissions,
+  useDrivers,
+  useCountryIntelligence
+} from '@/hooks/useForestData';
 import { api } from '@/lib/api';
 import { TreePine, Flame, Search, Globe, Brain, TrendingUp } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -45,6 +51,34 @@ export default function CountryExplorer() {
 }, []);
 
   const { data: countries } = useCountries();
+  const {
+    data: intelligenceData,
+    error: intelligenceError,
+    isLoading: intelligenceLoading,
+  } = useCountryIntelligence();
+
+  console.log("INTELLIGENCE DATA:", intelligenceData);
+  console.log("INTELLIGENCE ERROR:", intelligenceError);
+  console.log("INTELLIGENCE LOADING:", intelligenceLoading);
+
+  const selectedIntelligence = intelligenceData?.find(
+    (d: any) => {
+      const intelligenceCountry =
+        d.country?.toLowerCase().trim();
+
+      const selected =
+        selectedCountry?.toLowerCase().trim();
+
+      return (
+        intelligenceCountry === selected ||
+        intelligenceCountry?.includes(selected) ||
+        selected?.includes(intelligenceCountry)
+      );
+    }
+  );
+
+  console.log("INTELLIGENCE FULL:", intelligenceData);
+  console.log("SELECTED INTELLIGENCE:", selectedIntelligence);
   const { data: lossTrend, isLoading: trendLoading } = useLossTrend(selectedCountry);
   const { data: emissions, isLoading: emissionsLoading } = useEmissions(selectedCountry);
   const { data: drivers, isLoading: driversLoading } = useDrivers(selectedCountry);
@@ -113,6 +147,12 @@ export default function CountryExplorer() {
     if (value >= 1000000) return `${(value / 1000000).toFixed(0)}M`;
     return value.toLocaleString();
   };
+  // 🌍 Indigenous recognition percentage
+  const recognitionRatio =
+    selectedLandmark && selectedLandmark.territories > 0
+      ? (selectedLandmark.recognized / selectedLandmark.territories) * 100
+      : 0;
+
   // ✅ Prepare sorted data (latest first)
   const sortedTrend = [...displayTrend].sort(
     (a, b) => Number(b.year) - Number(a.year)
@@ -134,31 +174,21 @@ export default function CountryExplorer() {
             <p className="text-muted-foreground text-lg">
               Explore detailed deforestation data by country
             </p>
+            {/* 🌍 COUNTRY INTELLIGENCE SUMMARY */}
+            {selectedCountry && (
+              <div className="mt-4 max-w-3xl">
+                <div className="bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-3">
+                  <p className="text-sm text-emerald-900 leading-relaxed">
+                    {selectedCountry} shows ongoing environmental pressure linked to
+                    forest loss, carbon emissions, and land-use activity. This section
+                    combines satellite-based monitoring with restoration intelligence
+                    indicators to support territorial analysis and ecosystem decision-making.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
-          <div className="flex gap-2">
-            {selectedCountry ? (
-              <>
-                <button
-                  onClick={() => navigate(`/predictions?country=${encodeURIComponent(selectedCountry)}`)}
-                  className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-                >
-                  <TrendingUp className="h-4 w-4" />
-                  AI Predictions for {selectedCountry}
-                </button>
 
-                <button
-                  onClick={() => {
-                    alert("CLICK WORKED");
-                  }}
-                  style={{ position: "relative", zIndex: 50 }} // 👈 ADD THIS
-                  className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-                >
-                  <Brain className="h-4 w-4" />
-                  AI Recommendations for {selectedCountry}
-                </button>
-              </>
-            ) : null}
-          </div>
         </div>
       </div>
 
@@ -206,54 +236,140 @@ export default function CountryExplorer() {
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-        <StatCard
-          title="Total Tree Cover Loss"
-          value={formatHectares(totalLoss)}
-          subtitle={`${selectedCountryName} - All years`}
-          icon={TreePine}
-          variant="forest"
-        />
-        <StatCard
-          title="Total Carbon Emissions"
-          value={formatEmissions(displayEmissions.reduce((sum, d) => sum + d.value, 0))}
-          subtitle="MgCO₂e released"
-          icon={Flame}
-          variant="amber"
-        />
-        {selectedLandmark && (
-  <>
-        <StatCard
-          title="Indigenous Territories"
-          value={selectedLandmark.territories}
-          subtitle="LANDMARK dataset"
-          icon={Globe}
-          variant="forest"
-        />
+      {/* 🤖 AI ACTIONS */}
+      {selectedCountry && (
+        <div className="flex flex-wrap gap-3 mb-8">
 
-        <StatCard
-          title="Recognized Territories"
-          value={selectedLandmark.recognized}
-          subtitle="Acknowledged by government"
-          icon={TreePine}
-          variant="forest"
-        />
+          <button
+            onClick={() =>
+              navigate(`/predictions?country=${encodeURIComponent(selectedCountry)}`)
+            }
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            <TrendingUp className="h-4 w-4" />
+            AI Predictions for {selectedCountry}
+          </button>
 
-        <StatCard
-          title="Unrecognized Territories"
-          value={selectedLandmark.not_recognized}
-          subtitle="Not acknowledged"
-          icon={Flame}
-          variant="amber"
-        />
-  </>
-)}
+          <button
+            onClick={() =>
+              navigate(`/recommendations?country=${encodeURIComponent(selectedCountry)}`)
+            }
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            <Brain className="h-4 w-4" />
+            AI Recommendations for {selectedCountry}
+          </button>
 
+        </div>
+      )}
+        {/* 🌍 INTELLIGENCE OVERVIEW */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-10">
 
-      </div>
+          {/* 🌿 ENVIRONMENTAL PRESSURE */}
+          <div>
 
-      {/* Charts Grid */}
+            <div className="mb-3">
+              <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                Environmental Pressure Indicators
+              </h3>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+              <StatCard
+                title="Total Tree Cover Loss"
+                value={formatHectares(totalLoss)}
+                subtitle={`${selectedCountryName} - All years`}
+                icon={TreePine}
+                variant="forest"
+              />
+
+              <StatCard
+                title="Total Carbon Emissions"
+                value={formatEmissions(displayEmissions.reduce((sum, d) => sum + d.value, 0))}
+                subtitle="MgCO₂e released"
+                icon={Flame}
+                variant="amber"
+              />
+
+              <StatCard
+                title="Restoration Pressure"
+                value={
+                  selectedIntelligence?.restoration_pressure_score != null
+                    ? selectedIntelligence.restoration_pressure_score.toFixed(2)
+                    : "No Data"
+                }
+                subtitle={
+                  selectedIntelligence?.restoration_pressure_score != null
+                    ? "Composite restoration urgency"
+                    : "No restoration intelligence available"
+                }
+                icon={TrendingUp}
+                variant={
+                  selectedIntelligence?.restoration_pressure_score != null
+                    ? "amber"
+                    : "muted"
+                }
+              />
+
+            </div>
+
+          </div>
+
+          {/* 🌍 GOVERNANCE */}
+          <div>
+
+            <div className="mb-3">
+              <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                Territorial & Indigenous Governance
+              </h3>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+
+              {selectedLandmark && (
+                <>
+                  <StatCard
+                    title="Indigenous Territories"
+                    value={selectedLandmark.territories}
+                    subtitle="LANDMARK dataset"
+                    icon={Globe}
+                    variant="forest"
+                  />
+
+                  <StatCard
+                    title="Recognized Territories"
+                    value={selectedLandmark.recognized}
+                    subtitle="Acknowledged by government"
+                    icon={TreePine}
+                    variant="forest"
+                  />
+
+                  <StatCard
+                    title="Unrecognized Territories"
+                    value={selectedLandmark.not_recognized}
+                    subtitle="Not acknowledged"
+                    icon={Flame}
+                    variant="amber"
+                  />
+
+                  <StatCard
+                    title="Recognition Ratio"
+                    value={`${recognitionRatio.toFixed(1)}%`}
+                    subtitle="Recognized indigenous territories"
+                    icon={Globe}
+                    variant="forest"
+                  />
+                </>
+              )}
+
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <ChartCard
           title={`Tree Cover Loss Trend - ${selectedCountryName || 'Select Country'}`}
@@ -262,11 +378,19 @@ export default function CountryExplorer() {
           {trendLoading ? (
             <Skeleton className="h-[300px] w-full" />
           ) : (
-            <AreaTrendChart
-              data={displayTrend}
-              color="forest"
-              formatValue={formatHectares}
-            />
+            <>
+              <AreaTrendChart
+                data={displayTrend}
+                color="forest"
+                formatValue={formatHectares}
+              />
+
+              <p className="text-sm text-gray-600 mt-5">
+                Forest loss patterns in {selectedCountryName} reveal persistent
+                environmental pressure associated with land-use activity,
+                extraction, and ecosystem transformation.
+              </p>
+            </>
           )}
         </ChartCard>
 
@@ -278,11 +402,19 @@ export default function CountryExplorer() {
             {primaryLoading ? (
               <Skeleton className="h-[300px] w-full" />
             ) : (
-              <AreaTrendChart
-                data={primaryLossTrend}
-                color="terracotta"
-                formatValue={formatHectares}
-              />
+              <>
+                <AreaTrendChart
+                  data={primaryLossTrend}
+                  color="terracotta"
+                  formatValue={formatHectares}
+                />
+
+                <p className="text-sm text-gray-600 mt-5">
+                  Primary forest ecosystems in {selectedCountryName} continue to face
+                  degradation pressure, particularly in ecologically sensitive and
+                  biodiversity-rich regions.
+                </p>
+              </>
             )}
           </ChartCard>
         )}
@@ -291,7 +423,7 @@ export default function CountryExplorer() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <ChartCard
           title="Deforestation Drivers"
-          subtitle={`${selectedCountryName} breakdown`}
+          subtitle="Estimated contribution to forest degradation"
         >
           {driversLoading ? (
             <Skeleton className="h-[250px] w-full" />
@@ -303,6 +435,11 @@ export default function CountryExplorer() {
                 centerLabel={displayDrivers[0]?.name || ''}
               />
               <DonutLegend data={displayDrivers} />
+              <p className="text-sm text-gray-600 mt-5">
+                Dominant deforestation drivers in {selectedCountryName} indicate the
+                primary environmental pressures contributing to ecosystem degradation
+                and territorial transformation.
+              </p>
             </>
           )}
         </ChartCard>
@@ -367,9 +504,17 @@ export default function CountryExplorer() {
       </ChartCard>
 
       {/* 🌍 REGION MAP SECTION */}
-      <div className="mt-10">
+      <div className="mt-12 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <h2 className="text-2xl font-bold mb-4">Explore Regions</h2>
+        <p className="text-sm text-gray-600 mb-4 max-w-3xl">
+          Explore subnational restoration intelligence, environmental indicators,
+          and territorial monitoring layers across regions within {selectedCountryName}.
+        </p>
         <RegionMap selectedCountry={selectedCountry} />
+        <p className="text-xs text-gray-400 mt-4">
+          Regional layers combine Global Forest Watch datasets,
+          territorial indicators, and experimental restoration intelligence.
+        </p>
       </div>
     </PageLayout>
   );

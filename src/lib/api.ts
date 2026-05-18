@@ -24,6 +24,17 @@ export interface LandmarkSummary {
   not_recognized: number;
 }
 
+export interface CountryIntelligence {
+  country: string;
+  tree_cover_loss_ha: number;
+  primary_forest_loss_ha: number;
+  carbon_gross_emissions_MgCO2e: number;
+  territories?: number;
+  recognized?: number;
+  recognition_ratio?: number;
+  restoration_pressure_score: number;
+}
+
 export interface LossTrendData {
   year: number;
   tree_cover_loss_ha: number;
@@ -162,9 +173,12 @@ async function fetchPOST<T>(
 export const api = {
   /* ---- Always safe ---- */
   getSummary: () => fetchGET<SummaryData>('/api/summary'),
-  getLandmarkSummary: () =>
-  fetchGET<LandmarkSummary[]>('/api/landmark'),
 
+  getLandmarkSummary: () =>
+    fetchGET<LandmarkSummary[]>('/api/landmark'),
+
+  getCountryIntelligence: () =>
+    fetchGET<CountryIntelligence[]>('/api/country-intelligence'),
 
   getCountries: () => fetchGET<string[]>('/api/countries').then(countries =>
   countries.map(name => {

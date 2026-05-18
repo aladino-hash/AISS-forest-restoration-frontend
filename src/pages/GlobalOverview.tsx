@@ -316,6 +316,18 @@ const { data: summary, isLoading: summaryLoading } = useSummary();
             <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
               Global Forest Overview
             </h1>
+            {/* 🎓 RESEARCH PLATFORM BADGE */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50/60 border border-emerald-100 text-emerald-700 text-xs font-medium mb-4">
+
+              <img
+                src="/images/Vector.svg"
+                alt="AISS"
+                className="h-4 w-4 object-contain"
+              />
+
+              AISS Research Platform • Experimental Intelligence System
+
+            </div>
             <p className="text-muted-foreground text-lg">
               Worldwide tree cover loss trends and deforestation statistics
             </p>
@@ -410,11 +422,18 @@ const { data: summary, isLoading: summaryLoading } = useSummary();
           {globalTrendLoading ? (
             <Skeleton className="h-[300px] w-full" />
           ) : displayTrend && displayTrend.length > 0 ? (
-            <AreaTrendChart
-              data={displayTrend}
-              color="forest"
-              formatValue={formatHectares}
-            />
+            <>
+              <AreaTrendChart
+                data={displayTrend}
+                color="forest"
+                formatValue={formatHectares}
+              />
+
+              <p className="text-xs text-gray-600 mt-5">
+                Global tree cover loss has remained persistently high since 2001,
+                with accelerated pressure observed across tropical regions.
+              </p>
+            </>
           ) : (
             <div className="h-[300px] w-full flex items-center justify-center text-muted-foreground">
               No trend data available
@@ -430,11 +449,20 @@ const { data: summary, isLoading: summaryLoading } = useSummary();
           {primaryLoading ? (
             <Skeleton className="h-[300px] w-full" />
           ) : primaryLossTrend && primaryLossTrend.length > 0 ? (
-            <AreaTrendChart
-              data={primaryLossTrend}
-              color="terracotta"
-              formatValue={formatHectares}
-            />
+
+            <>
+              <AreaTrendChart
+                data={primaryLossTrend}
+                color="terracotta"
+                formatValue={formatHectares}
+              />
+
+              <p className="text-xs text-gray-600 mt-5">
+                Primary forest ecosystems continue to experience significant degradation,
+                particularly in biodiversity-rich tropical regions.
+              </p>
+            </>
+
           ) : (
             <div className="h-[300px] w-full flex items-center justify-center text-muted-foreground">
               No primary forest data available
@@ -491,12 +519,25 @@ const { data: summary, isLoading: summaryLoading } = useSummary();
         {/* Yamino Research Site - Replacement for Global Map */}
         <ChartCard
           title="Amazon Rainforest Monitoring"
-          subtitle="Live satellite imagery (Sentinel-2 + NDVI)"
+          subtitle="Experimental monitoring interface using Sentinel-2 imagery and AI-assisted environmental analysis"
         >
           {/* 🔥 LIMIT HEIGHT ONLY IN OVERVIEW (does NOT affect real map page) */}
+          {/* 🌎 RESEARCH LOCATION */}
+          <div className="mb-3 flex items-center gap-2">
+
+            <div className="px-3 py-1 rounded-full bg-amber-50 border border-amber-100 text-amber-700 text-xs font-medium">
+              Research Prototype • Curimaná, Peru
+            </div>
+
+          </div>
           <div className="h-[350px] rounded-lg overflow-hidden">
             <CurimanaMap />
           </div>
+
+          {/* 📡 DATA SOURCES */}
+          <p className="text-xs text-gray-400 mt-3">
+            Data sources: Sentinel-2 imagery, NDVI analysis, and Global Forest Watch datasets.
+          </p>
 
         </ChartCard>
         {/* 🌱 IMPACT STATS */}
@@ -509,13 +550,21 @@ const { data: summary, isLoading: summaryLoading } = useSummary();
             </div>
 
             <div className="bg-blue-50 rounded-xl p-6 shadow-sm">
-              <div className="text-2xl font-bold text-blue-700">8 Countries</div>
-              <div className="text-sm text-gray-600 mt-1">Active monitoring regions</div>
+              <div className="text-2xl font-bold text-blue-700">
+                3 Research Regions
+              </div>
+              <div className="text-sm text-gray-600 mt-1">
+                Peru • Portugal • Experimental Sites
+              </div>
             </div>
 
             <div className="bg-yellow-50 rounded-xl p-6 shadow-sm">
-              <div className="text-2xl font-bold text-yellow-700">24/7</div>
-              <div className="text-sm text-gray-600 mt-1">Satellite monitoring</div>
+              <div className="text-2xl font-bold text-yellow-700">
+                Continuous
+              </div>
+              <div className="text-sm text-gray-600 mt-1">
+                Satellite Observation
+              </div>
             </div>
 
           </div>
@@ -649,8 +698,16 @@ const { data: summary, isLoading: summaryLoading } = useSummary();
 
           {/* 👥 TEAM SECTION */}
           <div className="mt-16 px-6 mb-16">
-            <h2 className="text-xl font-semibold mb-4">
-              The Team Behind the Platform
+            {/* 🎓 AISS LOGO */}
+            <div className="mb-4">
+              <img
+                src="/images/Vector.svg"
+                alt="AISS Logo"
+                className="h-16 object-contain"
+              />
+            </div>
+            <h2 className="text-xl font-semibold mb-2">
+              AISS Master Thesis Project
             </h2>
 
             <p className="text-sm text-gray-600 mb-6 max-w-2xl">
@@ -660,49 +717,117 @@ const { data: summary, isLoading: summaryLoading } = useSummary();
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-              {/* 👤 TEAM MEMBER 1 */}
+              {/* 👤 JUAN */}
               <div className="bg-white rounded-xl shadow-md p-5 text-center">
+
                 <img
-                  src="/images/team1.jpg"
-                  className="w-24 h-24 mx-auto rounded-full object-cover mb-3"
+                  src="/images/Aladino.jpg"
+                  className="w-32 h-32 mx-auto rounded-full object-cover mb-4 shadow-md"
                 />
-                <h3 className="font-semibold">Your Name</h3>
-                <p className="text-xs text-gray-500">Founder • AI & Strategy</p>
-                <p className="text-xs text-gray-400 mt-2">
-                  Building intelligent systems for forest restoration.
+
+                <h3 className="font-semibold">
+                  Juan Aladino Valdiviezo Alegria
+                </h3>
+
+                <p className="text-xs text-gray-600">
+                  AISS Researcher • AI & Restoration Intelligence
                 </p>
+
+                <p className="text-xs text-gray-400 mt-2">
+                  Developing AI-driven territorial intelligence systems
+                  for ecosystem restoration and forest monitoring.
+                </p>
+
               </div>
 
-              {/* 👤 TEAM MEMBER 2 */}
+              {/* 👨‍🏫 PROFESSOR */}
               <div className="bg-white rounded-xl shadow-md p-5 text-center">
+
                 <img
-                  src="/images/team2.jpg"
-                  className="w-24 h-24 mx-auto rounded-full object-cover mb-3"
+                  src="/images/Professor Carlos pic.png"
+                  className="w-32 h-32 mx-auto rounded-full object-cover mb-4 shadow-md"
                 />
-                <h3 className="font-semibold">Field Partner</h3>
-                <p className="text-xs text-gray-500">Agroforestry Specialist</p>
-                <p className="text-xs text-gray-400 mt-2">
-                  On-the-ground expertise in sustainable land use systems.
+
+                <h3 className="font-semibold">
+                  Carlos Miguel Nobrega Velosa
+                </h3>
+
+                <p className="text-xs text-gray-500">
+                  Thesis Advisor • FCNET
                 </p>
+
+                <p className="text-xs text-gray-400 mt-2">
+                  Faculty of Natural Sciences, Engineering and Technology.
+                  Specialist in sustainability and environmental systems.
+                </p>
+
               </div>
 
-              {/* 👤 TEAM MEMBER 3 */}
+              {/* 👨‍💻 BACKEND */}
               <div className="bg-white rounded-xl shadow-md p-5 text-center">
+
                 <img
-                  src="/images/team3.jpg"
-                  className="w-24 h-24 mx-auto rounded-full object-cover mb-3"
+                  src="/images/logo.png"
+                  className="w-24 h-24 mx-auto rounded-full object-cover mb-3 p-4 bg-gray-50"
                 />
-                <h3 className="font-semibold">Remote Sensing Lead</h3>
-                <p className="text-xs text-gray-500">GIS & Satellite Analysis</p>
-                <p className="text-xs text-gray-400 mt-2">
-                  Transforming satellite data into actionable insights.
+
+                <h3 className="font-semibold">
+                  Buhari Ahmad
+                </h3>
+
+                <p className="text-xs text-gray-500">
+                  Backend Developer
                 </p>
+
+                <p className="text-xs text-gray-400 mt-2">
+                  Supporting backend infrastructure, APIs,
+                  and platform integration for FYNOS AI.
+                </p>
+
               </div>
 
               </div>
             </div>
         </div>
       </div>
+      {/* 🌿 FOOTER */}
+      <footer className="mt-20 pt-6 border-t border-gray-200 text-center text-sm text-gray-500 max-w-2xl mx-auto">
+
+        <div className="flex items-center justify-center gap-2 mb-2">
+
+          <img
+            src="/images/Vector.svg"
+            alt="AISS"
+            className="h-5 w-5 object-contain"
+          />
+
+          <span className="font-medium text-gray-600">
+            AISS Master Thesis Research Platform
+          </span>
+
+        </div>
+
+        <p>
+          Developed for environmental monitoring, restoration intelligence,
+          and territorial research applications.
+        </p>
+
+        <p className="mt-2 text-xs text-gray-400">
+          Data sources include Global Forest Watch, LandMark Indigenous Territoties, Sentinel-2 imagery,
+          NDVI analysis, and experimental AI-assisted interpretation systems.
+        </p>
+
+        <p className="mt-4 text-sm text-gray-500">
+          Research Contact:
+          <a
+            href="mailto:YOUR_SCHOOL_EMAIL"
+            className="text-emerald-700 hover:underline ml-1"
+          >
+            aladino@tlu.ee
+          </a>
+        </p>
+
+      </footer>
     </PageLayout>
   );
 }
