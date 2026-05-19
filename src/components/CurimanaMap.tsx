@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/lib/api";
 import { useEffect, useState } from "react";
 import {
   MapContainer,
@@ -25,7 +26,7 @@ const MapClickHandler = ({ setClickedPoint }: any) => {
       const { lat, lng } = e.latlng;
 
       try {
-        const res = await fetch("http://127.0.0.1:5001/api/ndvi-point", {
+        const res = await fetch(`${API_BASE_URL}/api/ndvi-area`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ lat, lon: lng }),
@@ -120,7 +121,7 @@ const CurimanaMap = () => {
 
   /* 🌍 Load NDVI layer */
   useEffect(() => {
-    fetch("http://127.0.0.1:5001/api/satellite/curimana")
+    fetch(`${API_BASE_URL}/api/satellite/curimana`)
       .then((res) => res.json())
       .then((data) => setTileUrl(data?.data?.tile_url ?? null))
       .catch((err) => console.error("Error fetching tile:", err));
@@ -132,7 +133,7 @@ const CurimanaMap = () => {
 
     const analyzePolygon = async () => {
       try {
-        const res = await fetch("http://127.0.0.1:5001/api/ndvi-area", {
+        const res = await fetch(`${API_BASE_URL}/api/ndvi-area`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -251,7 +252,7 @@ const CurimanaMap = () => {
 
         <DrawControl setPolygon={setPolygon} />
 
-        {clickedPoint && (
+        {clickedPoint?.lat && clickedPoint?.lon && (
           <Marker
             position={[clickedPoint.lat, clickedPoint.lon]}
             icon={getMarkerIcon(clickedPoint.status)}

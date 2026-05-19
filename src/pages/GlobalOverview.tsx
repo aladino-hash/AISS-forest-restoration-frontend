@@ -12,7 +12,7 @@ import { useGlobalLossTrend, useGlobalDrivers } from '@/hooks/useGlobalData';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useNavigate } from 'react-router-dom';
 import { useMapData } from '@/hooks/useForestData';
-import { api } from '@/lib/api';
+import { api, API_BASE_URL } from '@/lib/api';
 import CurimanaMap from '@/components/CurimanaMap';
 
 export default function GlobalOverview() {
@@ -146,7 +146,7 @@ const { data: summary, isLoading: summaryLoading } = useSummary();
     const fetchTerrain = async () => {
       setTerrainLoading(true);
       try {
-        const res = await fetch("http://127.0.0.1:5001/api/ndvi-area", {
+        const res = await fetch(`${API_BASE_URL}/api/ndvi-area`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

@@ -1,3 +1,4 @@
+import AIRecommendationCard from "@/components/AIRecommendationCard";
 import { useSearchParams } from "react-router-dom";
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -31,9 +32,74 @@ import { PageLayout } from '@/components/layout/PageLayout';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
-import RecommendationFormatter from '@/components/RecommendationFormatter';
 import './Recommendations.css';
 
+const parseRecommendation = (text: any = {}) => {
+
+  // If backend already sends structured JSON
+  if (typeof text === "object") {
+    return {
+      Objective: text.Objective || text.objective || "",
+
+      "Implementation Timeframe":
+        text["Implementation Timeframe"] ||
+        text.implementation_timeframe ||
+        "",
+
+      "Specific Actions":
+        text["Specific Actions"] ||
+        text.specific_actions ||
+        [],
+
+      "Required Resources":
+        text["Required Resources"] ||
+        text.required_resources ||
+        "",
+
+      "Expected Measurable Impact":
+        text["Expected Measurable Impact"] ||
+        text.expected_measurable_impact ||
+        "",
+
+      "Supporting Evidence from Data":
+        text["Supporting Evidence from Data"] ||
+        text.supporting_evidence ||
+        "",
+    };
+  }
+
+  // Fallback for old text format
+  const result: any = {};
+
+  const getValue = (label: string) => {
+    const match = (text || "").match(
+      new RegExp(`\\*\\*${label}\\*\\*:([^\\n]+)`)
+    );
+    return match ? match[1].trim() : "";
+  };
+
+  result.Objective = getValue("Objective");
+
+  const actionsRaw = getValue("Specific Actions");
+
+  result["Specific Actions"] = actionsRaw
+    ? actionsRaw.split(/\d+\.\s*/).filter(Boolean)
+    : [];
+
+  result["Implementation Timeframe"] =
+    getValue("Implementation Timeframe");
+
+  result["Required Resources"] =
+    getValue("Required Resources");
+
+  result["Expected Measurable Impact"] =
+    getValue("Expected Measurable Impact");
+
+  result["Supporting Evidence from Data"] =
+    getValue("Supporting Evidence from Data");
+
+  return result;
+};
 const Recommendations: React.FC = () => {
   const [searchParams] = useSearchParams();
   const countryParam = searchParams.get("country");
@@ -196,34 +262,6 @@ ${rec.text}
       </PageLayout>
     );
   }
-const parseRecommendation = (text: string) => {
-  const result: any = {};
-
-  const getValue = (label: string) => {
-    const match = text.match(new RegExp(`\\*\\*${label}\\*\\*:([^\\n]+)`));
-    return match ? match[1].trim() : "";
-  };
-
-  result.Objective = getValue("Objective");
-
-  const actionsRaw = getValue("Specific Actions");
-  result["Specific Actions"] = actionsRaw
-    ? actionsRaw.split(/\d+\.\s*/).filter(Boolean)
-    : [];
-
-  result["Implementation Timeframe"] = getValue("Implementation Timeframe");
-
-  const resourcesRaw = getValue("Required Resources");
-  result["Required Resources"] = resourcesRaw
-    ? resourcesRaw.split(',').map(r => r.trim())
-    : [];
-
-  result["Expected Measurable Impact"] = getValue("Expected Measurable Impact");
-
-  result["Supporting Evidence from Data"] = getValue("Supporting Evidence from Data");
-
-  return result;
-};
 
   return (
     <PageLayout>
@@ -423,27 +461,52 @@ const parseRecommendation = (text: string) => {
                   </div>
                   
                   <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-                    {recommendations.data.recommendations?.map((rec, index) => (
-                      <div key={index} className={`p-6 ${index !== recommendations.data.recommendations.length - 1 ? 'border-b border-gray-100' : ''}`}>
-                        <div className="flex items-start gap-4">
-                          <div className="flex-shrink-0">
-                            <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold bg-blue-100 text-blue-700">
-                              {index + 1}
+
+                    {/* START recommendations map */}
+                    {recommendations.data.recommendations?.map((rec, index) => {
+
+                      // PARSE recommendation text into structured object
+                      const parsedRec = parseRecommendation(rec);
+
+                      console.log("RAW REC:", rec);
+                      console.log("PARSED REC:", parsedRec);
+
+                      return (
+
+                        <div
+                          key={index}
+                          className={`p-6 ${
+                            index !== recommendations.data.recommendations.length - 1
+                              ? 'border-b border-gray-100'
+                              : ''
+                          }`}
+                        >
+
+                          <div className="flex items-start gap-4">
+
+                            <div className="flex-shrink-0">
+                              <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold bg-blue-100 text-blue-700">
+                                {index + 1}
+                              </div>
                             </div>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-3">
-                              <h4 className="font-semibold text-gray-900 text-lg">Recommendation {index + 1}</h4>
-                            </div>
+
+                            <div className="flex-1 min-w-0">
+
+                              <div className="flex items-center gap-2 mb-3">
+                                <h4 className="font-semibold text-gray-900 text-lg">
+                                  Recommendation {index + 1}
+                                </h4>
+                              </div>
                             
-                            <RecommendationFormatter
-                              text={parseRecommendation(rec.description)}
-                              recommendationNumber={index + 1}
+                            <AIRecommendationCard
+                              recommendation={rec}
+                              index={index}
                             />
                           </div>
                         </div>
                       </div>
-                    ))}
+                    );
+                  })}
                   </div>
                 </div>
               </div>

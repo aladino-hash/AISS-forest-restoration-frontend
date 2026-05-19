@@ -247,7 +247,7 @@ const RestorationMap = () => {
         "AI analysis ready. Select intervention strategy based on ecosystem condition.",
     });
 
-    fetch("http://127.0.0.1:5001/api/ndvi-area", {
+    fetch("http://13.60.162.220:5001/api/ndvi-area", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -368,6 +368,15 @@ const RestorationMap = () => {
             opacity={0.85}
             maxZoom={25}
             maxNativeZoom={22}
+          />
+        )}
+
+        {/* SENTINEL-2 LIVE */}
+        {activeLayer === "gee" && (
+          <TileLayer
+            url="https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+            maxZoom={25}
+            opacity={1}
           />
         )}
 
