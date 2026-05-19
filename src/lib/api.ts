@@ -175,15 +175,15 @@ async function fetchPOST<T>(
 
 export const api = {
   /* ---- Always safe ---- */
-  getSummary: () => fetchGET<SummaryData>('/api/summary'),
+  getSummary: () => fetchGET<SummaryData>('/summary'),
 
   getLandmarkSummary: () =>
-    fetchGET<LandmarkSummary[]>('/api/landmark'),
+    fetchGET<LandmarkSummary[]>('/landmark'),
 
   getCountryIntelligence: () =>
-    fetchGET<CountryIntelligence[]>('/api/country-intelligence'),
+    fetchGET<CountryIntelligence[]>('/country-intelligence'),
 
-  getCountries: () => fetchGET<string[]>('/api/countries').then(countries =>
+  getCountries: () => fetchGET<string[]>('/countries').then(countries =>
   countries.map(name => {
     // Comprehensive country name to ISO 3166-1 alpha-3 mapping
     const codeMap: { [key: string]: string } = {
@@ -365,7 +365,7 @@ export const api = {
 
   getMapData: (year?: number) =>
     fetchGET<MapData[]>(
-      '/api/map-data',
+      '/map-data',
       year ? { animated: "true", year } : {} // Remove cache-busting timestamp for proper caching
     ),
 
@@ -373,35 +373,35 @@ export const api = {
 
   getLossTrend: (country?: string) => {
     if (!country) return Promise.resolve([]);
-    return fetchGET<LossTrendData[]>('/api/loss-trend', { country });
+    return fetchGET<LossTrendData[]>('/loss-trend', { country });
   },
 
   getPrimaryLossTrend: (country?: string) => {
     if (!country) return Promise.resolve([]);
-    return fetchGET<{year: number; primary_forest_loss_ha: number}[]>('/api/primary-loss-trend', { country });
+    return fetchGET<{year: number; primary_forest_loss_ha: number}[]>('/primary-loss-trend', { country });
   },
 
   getCumulativeLossTrend: (country?: string) => {
     if (!country) return Promise.resolve([]);
-    return fetchGET<CumulativeLossTrendData[]>('/api/cumulative-tree-cover-loss-trend', { country });
+    return fetchGET<CumulativeLossTrendData[]>('/cumulative-tree-cover-loss-trend', { country });
   },
 
   getCumulativePrimaryLossTrend: (country?: string) => {
     if (!country) return Promise.resolve([]);
-    return fetchGET<CumulativePrimaryLossTrendData[]>('/api/cumulative-primary-loss', { country });
+    return fetchGET<CumulativePrimaryLossTrendData[]>('/cumulative-primary-loss', { country });
   },
 
   getCumulativeDrivers: (country?: string) => {
     if (!country) return Promise.resolve([]);
-    return fetchGET<CumulativeDriversData[]>('/api/cumulative-drivers', { country });
+    return fetchGET<CumulativeDriversData[]>('/cumulative-drivers', { country });
   },
 
   getCumulativeTreeCoverLoss: () => {
-    return fetchGET<CumulativeTreeCoverLossData[]>('/api/cumulative-tree-cover-loss');
+    return fetchGET<CumulativeTreeCoverLossData[]>('/cumulative-tree-cover-loss');
   },
 
   getPrimaryLossAllCountries: (yearStart?: number, yearEnd?: number) => {
-    return fetchGET<{country: string; primary_forest_loss_ha: number}[]>('/api/primary-loss-all-countries',
+    return fetchGET<{country: string; primary_forest_loss_ha: number}[]>('/primary-loss-all-countries',
       yearStart || yearEnd ? {
         year_start: yearStart,
         year_end: yearEnd
@@ -411,12 +411,12 @@ export const api = {
 
   getDrivers: (country?: string) => {
     if (!country) return Promise.resolve([]);
-    return fetchGET<DriversData[]>('/api/drivers', { country });
+    return fetchGET<DriversData[]>('/drivers', { country });
   },
 
   getEmissions: (country?: string) => {
     if (!country) return Promise.resolve([]);
-    return fetchGET<EmissionsData[]>('/api/emissions', { country });
+    return fetchGET<EmissionsData[]>('/emissions', { country });
   },
 
   /* ---- Prediction (POST) ---- */
@@ -425,7 +425,7 @@ export const api = {
       return Promise.reject(new Error('Country and year required'));
     }
 
-    return fetchPOST<PredictionResponse>('/api/predict', {
+    return fetchPOST<PredictionResponse>('/predict', {
       country,
       year: targetYear,
     });
@@ -436,7 +436,7 @@ export const api = {
       return Promise.reject(new Error('Countries and year required'));
     }
 
-    return fetchPOST<MultiCountryPredictionResponse>('/api/predict', {
+    return fetchPOST<MultiCountryPredictionResponse>('/predict', {
       countries,
       year: targetYear,
     });
@@ -452,7 +452,7 @@ export const api = {
   }) => {
     console.log("🚀 API CALL:", context);
 
-    return fetchPOST('/api/recommendations', {
+    return fetchPOST('/recommendations', {
       country: context.country,
       stakeholder: context.stakeholder,
       dataRange: {
@@ -470,7 +470,7 @@ export const api = {
     timeframe: string;
     analysisType: 'comparative' | 'trend' | 'correlation';
   }) => {
-    return fetchPOST('/api/insights', {
+    return fetchPOST('/insights', {
       countries: request.countries.join(','),
       metrics: request.metrics.join(','),
       timeframe: request.timeframe,
@@ -479,11 +479,11 @@ export const api = {
   },
 
   getRecommendationTemplates: () => {
-    return fetchGET('/api/recommendations/templates');
+    return fetchGET('/recommendations/templates');
   },
 };
 export async function getSubnationalKPI() {
-  const response = await fetch(API_BASE_URL + '/api/subnational-kpi');
+  const response = await fetch(API_BASE_URL + '/subnational-kpi');
 
   if (!response.ok) {
     throw new Error("Failed to fetch subnational KPI data");
