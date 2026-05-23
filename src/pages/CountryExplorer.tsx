@@ -57,10 +57,6 @@ export default function CountryExplorer() {
     isLoading: intelligenceLoading,
   } = useCountryIntelligence();
 
-  console.log("INTELLIGENCE DATA:", intelligenceData);
-  console.log("INTELLIGENCE ERROR:", intelligenceError);
-  console.log("INTELLIGENCE LOADING:", intelligenceLoading);
-
   const selectedIntelligence = intelligenceData?.find(
     (d: any) => {
       const intelligenceCountry =
@@ -77,8 +73,6 @@ export default function CountryExplorer() {
     }
   );
 
-  console.log("INTELLIGENCE FULL:", intelligenceData);
-  console.log("SELECTED INTELLIGENCE:", selectedIntelligence);
   const { data: lossTrend, isLoading: trendLoading } = useLossTrend(selectedCountry);
   const { data: emissions, isLoading: emissionsLoading } = useEmissions(selectedCountry);
   const { data: drivers, isLoading: driversLoading } = useDrivers(selectedCountry);
@@ -117,8 +111,6 @@ export default function CountryExplorer() {
   const displayDrivers = drivers?.map(d => ({ name: d.driver, value: Math.round((d.hectares / drivers.reduce((sum, item) => sum + item.hectares, 0)) * 100) })) || [];
 
   const selectedCountryName = displayCountries.find(c => c.name === selectedCountry)?.name || 'Select Country';
-  console.log("Selected:", selectedCountry);
-  console.log("Landmark sample:", landmarkData[0]);
 
   const selectedLandmark = selectedCountry
   ? landmarkData.find((d: any) => {
@@ -174,19 +166,7 @@ export default function CountryExplorer() {
             <p className="text-muted-foreground text-lg">
               Explore detailed deforestation data by country
             </p>
-            {/* 🌍 COUNTRY INTELLIGENCE SUMMARY */}
-            {selectedCountry && (
-              <div className="mt-4 max-w-3xl">
-                <div className="bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-3">
-                  <p className="text-sm text-emerald-900 leading-relaxed">
-                    {selectedCountry} shows ongoing environmental pressure linked to
-                    forest loss, carbon emissions, and land-use activity. This section
-                    combines satellite-based monitoring with restoration intelligence
-                    indicators to support territorial analysis and ecosystem decision-making.
-                  </p>
-                </div>
-              </div>
-            )}
+
           </div>
 
         </div>
@@ -262,6 +242,7 @@ export default function CountryExplorer() {
 
         </div>
       )}
+
         {/* 🌍 INTELLIGENCE OVERVIEW */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-10">
 
@@ -313,11 +294,117 @@ export default function CountryExplorer() {
               />
 
             </div>
+            {selectedIntelligence?.restoration_pressure_score != null && (
+
+              <div className="mt-5 relative overflow-hidden rounded-3xl border border-emerald-500/20 bg-gradient-to-br from-[#07140f] via-[#0b1f17] to-[#13261d] p-6 shadow-2xl">
+
+                {/* Glow Effect */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.18),transparent_35%)]" />
+
+                <div className="relative z-10">
+
+                  <div className="flex items-center justify-between mb-5">
+
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.25em] text-emerald-400/70 font-semibold">
+                        Environmental Intelligence Profile
+                      </p>
+
+                      <h3 className="text-2xl font-bold text-white mt-1">
+                        Restoration Classification
+                      </h3>
+                    </div>
+
+                    <div
+                      className={`px-4 py-2 rounded-full text-xs font-bold tracking-wide shadow-lg ${
+                        selectedIntelligence.restoration_pressure_score >= 8
+                          ? "bg-red-500/20 text-red-300 border border-red-500/30"
+                          : selectedIntelligence.restoration_pressure_score >= 3
+                          ? "bg-amber-500/20 text-amber-200 border border-amber-500/30"
+                          : "bg-emerald-500/20 text-emerald-200 border border-emerald-500/30"
+                      }`}
+                    >
+                      {selectedIntelligence.restoration_pressure_score >= 8
+                        ? "HIGH RESTORATION PRESSURE"
+                        : selectedIntelligence.restoration_pressure_score >= 3
+                        ? "GOVERNANCE-INTENSIVE SYSTEM"
+                        : "LOWER PRESSURE SYSTEM"}
+                    </div>
+
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <div>
+
+                      <p className="text-sm uppercase tracking-wide text-emerald-400/60 mb-2">
+                        Intelligence Interpretation
+                      </p>
+
+                      <p className="text-sm leading-relaxed text-gray-300">
+
+                        {selectedIntelligence.restoration_pressure_score >= 8
+                          ? "Elevated forest loss and carbon emissions suggest stronger restoration urgency and environmental pressure across large-scale forest systems."
+                          : selectedIntelligence.restoration_pressure_score >= 3
+                          ? "Moderate environmental pressure combined with governance-related territorial structures and institutional recognition patterns."
+                          : "Relatively lower environmental degradation pressure compared to higher-intensity restoration systems."}
+
+                      </p>
+
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm">
+
+                      <p className="text-xs uppercase tracking-wide text-emerald-400/60 mb-2">
+                        Restoration Pressure Score
+                      </p>
+
+                      <div className="flex items-end gap-2">
+
+                        <span className="text-5xl font-black text-white">
+                          {selectedIntelligence.restoration_pressure_score.toFixed(2)}
+                        </span>
+
+                        <span className="text-sm text-gray-400 mb-1">
+                          composite index
+                        </span>
+
+                      </div>
+
+                      <div className="mt-4 h-2 w-full rounded-full bg-white/10 overflow-hidden">
+
+                        <div
+                          className={`h-full rounded-full ${
+                            selectedIntelligence.restoration_pressure_score >= 8
+                              ? "bg-gradient-to-r from-red-400 to-red-600"
+                              : selectedIntelligence.restoration_pressure_score >= 3
+                              ? "bg-gradient-to-r from-amber-300 to-amber-500"
+                              : "bg-gradient-to-r from-emerald-300 to-emerald-500"
+                          }`}
+                          style={{
+                            width: `${Math.min(
+                              selectedIntelligence.restoration_pressure_score * 5,
+                              100
+                            )}%`
+                          }}
+                        />
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            )}
 
           </div>
 
           {/* 🌍 GOVERNANCE */}
-          <div>
+          <div className="pt-1">
 
             <div className="mb-3">
               <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
@@ -334,7 +421,7 @@ export default function CountryExplorer() {
                     value={selectedLandmark.territories}
                     subtitle="LANDMARK dataset"
                     icon={Globe}
-                    variant="forest"
+                    variant="ocean"
                   />
 
                   <StatCard
@@ -342,7 +429,7 @@ export default function CountryExplorer() {
                     value={selectedLandmark.recognized}
                     subtitle="Acknowledged by government"
                     icon={TreePine}
-                    variant="forest"
+                    variant="ocean"
                   />
 
                   <StatCard
@@ -358,7 +445,7 @@ export default function CountryExplorer() {
                     value={`${recognitionRatio.toFixed(1)}%`}
                     subtitle="Recognized indigenous territories"
                     icon={Globe}
-                    variant="forest"
+                    variant="ocean"
                   />
                 </>
               )}
@@ -503,7 +590,7 @@ export default function CountryExplorer() {
         </div>
       </ChartCard>
 
-      {/* 🌍 REGION MAP SECTION */}
+      {/* 🌍 REGION MAP SECTION*/}
       <div className="mt-12 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <h2 className="text-2xl font-bold mb-4">Explore Regions</h2>
         <p className="text-sm text-gray-600 mb-4 max-w-3xl">

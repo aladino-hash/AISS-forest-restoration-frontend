@@ -26,7 +26,7 @@ const MapClickHandler = ({ setClickedPoint }: any) => {
       const { lat, lng } = e.latlng;
 
       try {
-        const res = await fetch(`${API_BASE_URL}/api/ndvi-area`, {
+        const res = await fetch(`${API_BASE_URL}/ndvi-area`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ lat, lon: lng }),
@@ -121,7 +121,7 @@ const CurimanaMap = () => {
 
   /* 🌍 Load NDVI layer */
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/satellite/curimana`)
+    fetch(`${API_BASE_URL}/satellite/curimana`)
       .then((res) => res.json())
       .then((data) => setTileUrl(data?.data?.tile_url ?? null))
       .catch((err) => console.error("Error fetching tile:", err));
@@ -133,7 +133,7 @@ const CurimanaMap = () => {
 
     const analyzePolygon = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/ndvi-area`, {
+        const res = await fetch(`${API_BASE_URL}/ndvi-area`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -281,14 +281,72 @@ const CurimanaMap = () => {
 
       {/* ANALYSIS PANEL */}
       {polygonAnalysis && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000]
-          bg-white/90 px-5 py-4 rounded-xl shadow-lg text-sm w-[260px]">
+        <div
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000]
+          bg-white/95 px-5 py-4 rounded-2xl shadow-2xl text-sm w-[320px]"
+        >
+          <div className="font-bold text-lg mb-3">
+            🌱 AI Land Intelligence
+          </div>
 
-          <div className="font-semibold mb-2">📊 Land Analysis</div>
+          <div className="space-y-2">
 
-          <div><strong>NDVI:</strong> {polygonAnalysis.ndvi?.toFixed(2)}</div>
-          <div><strong>Status:</strong> {polygonAnalysis.status}</div>
+            <div>
+              <strong>NDVI:</strong>{" "}
+              {polygonAnalysis.ndvi?.toFixed(2)}
+            </div>
 
+            <div>
+              <strong>Status:</strong>{" "}
+              {polygonAnalysis.status || "Moderately degraded"}
+            </div>
+
+            <div>
+              <strong>Ecosystem:</strong>{" "}
+              {polygonAnalysis.ecosystem_type || "Unknown"}
+            </div>
+
+            <div>
+              <strong>Carbon Estimate:</strong>{" "}
+              {polygonAnalysis.carbon_estimate_tons_per_ha?.toFixed(1)} t/ha
+            </div>
+
+            <div>
+              <strong>Biodiversity:</strong>{" "}
+              {polygonAnalysis.biodiversity_score}/100
+            </div>
+
+            <div>
+              <strong>Moisture:</strong>{" "}
+              {polygonAnalysis.moisture}
+            </div>
+
+            <div>
+              <strong>Soil:</strong>{" "}
+              {polygonAnalysis.soil}
+            </div>
+
+            <div>
+              <strong>Risk:</strong>{" "}
+              {polygonAnalysis.risk}
+            </div>
+
+            <div>
+              <strong>Elevation:</strong>{" "}
+              {Math.round(polygonAnalysis.elevation || 0)} m
+            </div>
+          </div>
+
+          <div className="mt-4 pt-3 border-t text-xs text-gray-500">
+            AI-generated environmental interpretation from Sentinel-2 imagery
+          </div>
+          <button
+            onClick={() => window.location.href = "/restoration"}
+            className="mt-4 w-full bg-green-600 hover:bg-green-700
+            text-white py-2 px-4 rounded-xl font-semibold transition-all"
+          >
+            🌿 Generate Agroforestry Plan
+          </button>
         </div>
       )}
 

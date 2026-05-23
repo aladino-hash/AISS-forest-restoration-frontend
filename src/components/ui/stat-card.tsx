@@ -44,7 +44,7 @@ export function StatCard({
   return (
     <div
       className={cn(
-        'relative overflow-hidden rounded-xl p-6 transition-all duration-300 hover:scale-[1.02] animate-fade-in',
+        'relative overflow-hidden rounded-xl p-4 transition-all duration-300 hover:scale-[1.02] animate-fade-in',
         variantStyles[variant],
         !isGradient && 'glass-card',
         className

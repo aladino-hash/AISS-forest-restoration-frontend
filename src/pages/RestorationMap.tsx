@@ -247,7 +247,7 @@ const RestorationMap = () => {
         "AI analysis ready. Select intervention strategy based on ecosystem condition.",
     });
 
-    fetch("http://13.60.162.220:5001/api/ndvi-area", {
+    fetch("/api/ndvi-area", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
