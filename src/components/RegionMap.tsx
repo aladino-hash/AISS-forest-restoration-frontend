@@ -196,11 +196,11 @@ export default function RegionMap({
                   const mappedRegion =
                     selectedCountry === "Portugal"
                       ? regionNameMap[region] || region
-                      : normalizedRegion;
+                      : region;
 
                   try {
                     const response = await fetch(
-                      `${API_BASE_URL}/api/subnational/${selectedCountry}/${mappedRegion}`
+                      `${API_BASE_URL}/subnational/${selectedCountry}/${mappedRegion}`
                     );
 
                     const data = await response.json();

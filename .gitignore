@@ -89,3 +89,6 @@ public/video/FranciscoVideo.mp4
 models/
 # Jupyter notebooks
 *.ipynb
+
+public/portugal_tiles/
+dist/
