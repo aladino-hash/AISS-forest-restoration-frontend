@@ -12,6 +12,7 @@ export default function AIRecommendationCard({
 
   const data =
     recommendation.text ||
+    recommendation.description?.text ||
     recommendation.description ||
     recommendation.content ||
     recommendation ||

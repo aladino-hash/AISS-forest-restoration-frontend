@@ -36,7 +36,17 @@ import './Recommendations.css';
 
 const parseRecommendation = (text: any = {}) => {
 
-  // If backend already sends structured JSON
+  // AI returns markdown inside description
+  if (typeof text === "object" && text.description) {
+    text = text.description;
+  }
+
+   // Handle backend wrapper
+  if (typeof text === "object" && text.raw_text) {
+    text = text.raw_text;
+  }
+
+  // Structured JSON support
   if (typeof text === "object") {
     return {
       Objective: text.Objective || text.objective || "",
@@ -70,13 +80,18 @@ const parseRecommendation = (text: any = {}) => {
 
   // Fallback for old text format
   const result: any = {};
+  const cleanText = (text || "").replace(/\*\*/g, "");
 
   const getValue = (label: string) => {
-    const match = (text || "").match(
-      new RegExp(`\\*\\*${label}\\*\\*:([^\\n]+)`)
-    );
-    return match ? match[1].trim() : "";
-  };
+  const regex = new RegExp(
+    `${label}:\\s*([\\s\\S]*?)(?=\\n(?:Objective|Specific Actions|Implementation Timeframe|Required Resources|Expected Measurable Impact|Supporting Evidence from Data):|$)`,
+    "i"
+  );
+
+  const match = cleanText.match(regex);
+
+  return match ? match[1].trim() : "";
+};
 
   result.Objective = getValue("Objective");
 
@@ -468,7 +483,10 @@ ${rec.text}
                       // PARSE recommendation text into structured object
                       const parsedRec = parseRecommendation(rec);
 
-                      console.log("RAW REC:", rec);
+                      console.log(
+                        "RAW REC:",
+                        JSON.stringify(rec, null, 2)
+                      );
                       console.log("PARSED REC:", parsedRec);
 
                       return (
@@ -499,7 +517,7 @@ ${rec.text}
                               </div>
                             
                             <AIRecommendationCard
-                              recommendation={rec}
+                              recommendation={parsedRec}
                               index={index}
                             />
                           </div>
