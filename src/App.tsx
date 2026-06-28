@@ -14,6 +14,7 @@ import CountryExplorer from "./pages/CountryExplorer";
 import WorldMap from "./pages/WorldMap";
 import Predictions from "./pages/Predictions";
 import Recommendations from "./pages/Recommendations";
+import ScenarioSimulator from "./pages/ScenarioSimulator";
 import NotFound from "./pages/NotFound";
 import UnderConstruction from "./pages/UnderConstruction";
 
@@ -74,6 +75,7 @@ const App = () => (
           <Route path="/map" element={<WorldMap />} />
           <Route path="/predictions" element={<Predictions />} />
           <Route path="/recommendations" element={<Recommendations />} />
+          <Route path="/scenario" element={<ScenarioSimulator />} />
 
           {/* Fallback */}
           <Route path="*" element={<NotFound />} />
