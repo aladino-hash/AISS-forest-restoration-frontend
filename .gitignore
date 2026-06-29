@@ -92,3 +92,7 @@ models/
 
 public/portugal_tiles/
 dist/
+
+# Local backup files
+*Backup.tsx
+rccomponentsRegionMap.tsx srccomponentsRegionMap_QGIS_Backup.tsx
