@@ -1,3 +1,4 @@
+import StakeholderSelector from "@/components/StakeholderSelector";
 import { useState } from "react";
 import { PageLayout } from "@/components/layout/PageLayout";
 import ScenarioControlPanel from "@/components/ScenarioControlPanel";
@@ -93,6 +94,8 @@ const runScenario = async () => {
           </Select>
         </div>
       </div>
+
+      <StakeholderSelector />
 
       <ScenarioControlPanel
         scenario={scenario}
