@@ -7,7 +7,7 @@ import {
   Popup,
   Marker,
 } from "react-leaflet";
-
+import { useNavigate } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
@@ -111,7 +111,18 @@ const DrawControl = ({ setPolygon }: any) => {
 /* =========================
    MAIN COMPONENT
 ========================= */
-const CurimanaMap = () => {
+interface CurimanaMapProps {
+  initialLocation?: string;
+  readOnly?: boolean;
+}
+
+const CurimanaMap = ({
+  initialLocation,
+  readOnly = false,
+}: CurimanaMapProps) => {
+
+  const navigate = useNavigate();
+
   const [tileUrl, setTileUrl] = useState<string | null>(null);
   const [clickedPoint, setClickedPoint] = useState<any>(null);
   const [userLocation, setUserLocation] = useState<any>(null);
@@ -168,12 +179,12 @@ const CurimanaMap = () => {
   };
 
   /* 🔍 SEARCH */
-  const handleSearch = async () => {
-    if (!searchQuery) return;
+  const searchLocation = async (query: string) => {
+    if (!query) return;
 
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${searchQuery}`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${query}`
       );
       const data = await res.json();
 
@@ -187,6 +198,20 @@ const CurimanaMap = () => {
       console.error("Search error:", err);
     }
   };
+
+  const handleSearch = () => {
+    searchLocation(searchQuery);
+  };
+
+  useEffect(() => {
+    console.log("Prop received:", initialLocation);
+
+    if (!initialLocation) return;
+
+    setSearchQuery(initialLocation);
+
+    searchLocation(initialLocation);
+  }, [initialLocation]);
 
   /* 🎨 Marker style */
   const getMarkerIcon = (status: string) => {
@@ -250,9 +275,11 @@ const CurimanaMap = () => {
 
         <MapClickHandler setClickedPoint={setClickedPoint} />
 
-        <DrawControl setPolygon={setPolygon} />
+        {!readOnly && (
+          <DrawControl setPolygon={setPolygon} />
+        )}
 
-        {clickedPoint?.lat && clickedPoint?.lon && (
+        {!readOnly && clickedPoint?.lat && clickedPoint?.lon && (
           <Marker
             position={[clickedPoint.lat, clickedPoint.lon]}
             icon={getMarkerIcon(clickedPoint.status)}
@@ -266,21 +293,21 @@ const CurimanaMap = () => {
       </MapContainer>
 
       {/* INSTRUCTION */}
-      {!clickedPoint && !polygon && (
+      {!readOnly && !clickedPoint && !polygon && (
         <div className="absolute top-[70px] left-1/2 -translate-x-1/2 z-[1000] bg-white/70 px-4 py-2 rounded-full text-sm shadow-md">
           👉 Click or draw a polygon
         </div>
       )}
 
       {/* POLYGON STATUS */}
-      {polygon && !polygonAnalysis && (
+      {!readOnly && polygon && !polygonAnalysis && (
         <div className="absolute top-[70px] left-1/2 -translate-x-1/2 z-[1000] bg-green-600 text-white px-4 py-2 rounded-full text-sm shadow-md">
           ✅ Area selected — analyzing...
         </div>
       )}
 
       {/* ANALYSIS PANEL */}
-      {polygonAnalysis && (
+      {!readOnly && polygonAnalysis && (
         <div
           className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000]
           bg-white/95 px-5 py-4 rounded-2xl shadow-2xl text-sm w-[320px]"
@@ -341,7 +368,13 @@ const CurimanaMap = () => {
             AI-generated environmental interpretation from Sentinel-2 imagery
           </div>
           <button
-            onClick={() => window.location.href = "/restoration"}
+            onClick={() =>
+              navigate("/restoration-brief", {
+                state: {
+                  polygonAnalysis,
+                },
+              })
+            }
             className="mt-4 w-full bg-green-600 hover:bg-green-700
             text-white py-2 px-4 rounded-xl font-semibold transition-all"
           >

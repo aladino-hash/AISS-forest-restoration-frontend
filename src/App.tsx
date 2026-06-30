@@ -17,6 +17,7 @@ import Recommendations from "./pages/Recommendations";
 import ScenarioSimulator from "./pages/ScenarioSimulator";
 import NotFound from "./pages/NotFound";
 import UnderConstruction from "./pages/UnderConstruction";
+import RestorationBrief from "./pages/RestorationBrief";
 
 const queryClient = new QueryClient();
 
@@ -47,7 +48,16 @@ const App = () => (
             path="/curimana"
             element={
               experimentalEnabled
-                ? <CurimanaMap />
+                ? <Curimana />
+                : <UnderConstruction />
+            }
+          />
+
+          <Route
+            path="/restoration-brief"
+            element={
+              experimentalEnabled
+                ? <RestorationBrief />
                 : <UnderConstruction />
             }
           />

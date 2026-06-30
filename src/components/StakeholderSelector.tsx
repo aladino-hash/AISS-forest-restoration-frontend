@@ -1,12 +1,23 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import StepIdentity from "./onboarding/StepIdentity";
+import StepLocation from "./onboarding/StepLocation";
+import { useNavigate } from "react-router-dom";
 
 export default function StakeholderSelector() {
   const [selectedMission, setSelectedMission] = useState<string | null>(null);
+
   const [name, setName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+
   const [country, setCountry] = useState("");
+  const [region, setRegion] = useState("");
+  const [province, setProvince] = useState("");
+  const [community, setCommunity] = useState("");
+
   const [restoreStarted, setRestoreStarted] = useState(false);
+
+  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
 
   return (
@@ -49,6 +60,7 @@ export default function StakeholderSelector() {
       </div>
 
       <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+
         <div
           onClick={() => setSelectedMission("intelligence")}
           className={`rounded-2xl p-6 cursor-pointer transition-all ${
@@ -56,11 +68,13 @@ export default function StakeholderSelector() {
               ? "border-2 border-emerald-600 bg-emerald-50 shadow-lg"
               : "border border-emerald-100 hover:border-emerald-400 hover:shadow-md"
           }`}
-          >
+        >
           <div className="text-3xl mb-4">🌍</div>
+
           <h3 className="text-xl font-bold text-gray-900">
             {t("onboarding.missions.intelligence.title")}
           </h3>
+
           <p className="mt-3 text-sm text-gray-600 leading-6">
             {t("onboarding.missions.intelligence.description")}
           </p>
@@ -75,12 +89,14 @@ export default function StakeholderSelector() {
           }`}
         >
           <div className="text-3xl mb-4">🌱</div>
+
           <h3 className="text-xl font-bold text-gray-900">
             Restore Land
           </h3>
+
           <p className="mt-3 text-sm text-gray-600 leading-6">
-            Receive AI-assisted restoration plans, monitor your land, and connect
-            with restoration experts through WhatsApp.
+            Receive AI-assisted restoration plans, monitor your land,
+            and connect with restoration experts through WhatsApp.
           </p>
         </div>
 
@@ -91,26 +107,30 @@ export default function StakeholderSelector() {
               ? "border-2 border-emerald-600 bg-emerald-50 shadow-lg"
               : "border border-emerald-100 hover:border-emerald-400 hover:shadow-md"
           }`}
-          >
+        >
           <div className="text-3xl mb-4">🤝</div>
+
           <h3 className="text-xl font-bold text-gray-900">
             Offer Services
           </h3>
+
           <p className="mt-3 text-sm text-gray-600 leading-6">
-            Join restoration projects, offer your expertise, and help bring
-            agroforestry and restoration plans to life.
+            Join restoration projects, offer your expertise,
+            and help bring restoration plans to life.
           </p>
         </div>
+
       </div>
 
       {selectedMission === "restore_land" && (
         <div className="mt-8 rounded-2xl border border-emerald-100 bg-emerald-50 p-6">
+
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">
             Restoration Partner Onboarding
           </p>
 
           <h3 className="mt-3 text-2xl font-bold text-gray-900">
-            🌱 Let's restore your land together.
+            🌱 Let&apos;s restore your land together.
           </h3>
 
           <div className="mt-4 h-2 w-full rounded-full bg-emerald-100">
@@ -132,8 +152,9 @@ export default function StakeholderSelector() {
 
           <p className="mt-3 text-gray-700 leading-7">
             Every restored hectare begins with a single step.
-
-            We'll guide you using artificial intelligence, satellite imagery, local knowledge, and WhatsApp to create a restoration plan tailored to your land.
+            We'll guide you using artificial intelligence,
+            satellite imagery, local knowledge and WhatsApp
+            to create a restoration plan tailored to your land.
           </p>
 
           {!restoreStarted && (
@@ -146,110 +167,112 @@ export default function StakeholderSelector() {
           )}
 
           {restoreStarted && (
-
             <>
-              <div className="mt-6">
-                <label className="text-xl font-semibold text-gray-900">
-                  👋 What should we call you?
-                </label>
 
-                <input
-                  type="text"
-                  placeholder="Your first name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="mt-2 w-full rounded-lg border border-emerald-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              <StepIdentity
+                name={name}
+                setName={setName}
+                whatsapp={whatsapp}
+                setWhatsapp={setWhatsapp}
+              />
+
+              {whatsapp && (
+                <StepLocation
+                  country={country}
+                  setCountry={setCountry}
+                  region={region}
+                  setRegion={setRegion}
+                  province={province}
+                  setProvince={setProvince}
+                  community={community}
+                  setCommunity={setCommunity}
                 />
+              )}
 
-                {name && (
-                  <div className="mt-4 rounded-xl bg-white border border-emerald-100 p-4">
-                    <p className="text-sm text-gray-700">
-                      Nice to meet you,{" "}
+              {country && (
+                <div className="mt-8 rounded-2xl border border-emerald-200 bg-gradient-to-br from-white to-emerald-50 p-6 shadow-sm">
+
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-2xl">
+                      🛰️
+                    </div>
+
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900">
+                        Next: Discover your land
+                      </h3>
+
+                      <p className="text-sm text-emerald-700">
+                        You're only one step away from your AI restoration assessment.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 space-y-4 text-gray-700 leading-7">
+
+                    <p>
+                      Great! We now know that your restoration project is located in{" "}
                       <span className="font-semibold text-emerald-700">
-                        {name}
-                      </span>
-                      . FYNOS AI will use WhatsApp to keep this process simple and accessible.
-                    </p>
-                  </div>
-                )}
-
-                {name && (
-                  <div className="mt-6">
-                    <label className="text-sm font-medium text-gray-700">
-                      WhatsApp number
-                    </label>
-
-                    <p className="mt-1 text-sm text-gray-500">
-                      We'll use WhatsApp to send AI recommendations, restoration updates, and
-                      important notifications about your land.
+                        {community || province || region || country}
+                      </span>.
                     </p>
 
-                    <input
-                      type="tel"
-                      placeholder="+51 999 999 999"
-                      value={whatsapp}
-                      onChange={(e) => setWhatsapp(e.target.value)}
-                      className="mt-3 w-full rounded-lg border border-emerald-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    />
-                  </div>
-                )}
-                {whatsapp && (
-                  <div className="mt-6 rounded-xl bg-white border border-emerald-100 p-4">
-                    <p className="text-sm text-gray-700">
-                      Great. We&apos;ll use{" "}
-                      <span className="font-semibold text-emerald-700">
-                        {whatsapp}
-                      </span>{" "}
-                      to send restoration updates, AI recommendations, and alerts about your land.
+                    <p>
+                      In the next step, FYNOS AI will guide you through recent
+                      <span className="font-semibold"> Sentinel-2 satellite imagery </span>
+                      so we can locate your property together.
                     </p>
-                  </div>
-                )}
 
-                {whatsapp && (
-                  <div className="mt-6">
-                    <label className="text-xl font-semibold text-gray-900">
-                      🌎 Where is the land you'd like to restore?
-                    </label>
-
-                    <select
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
-                      className="mt-3 w-full rounded-lg border border-emerald-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    >
-                      <option value="">Select a country</option>
-                      <option value="Peru">Peru</option>
-                      <option value="Brazil">Brazil</option>
-                      <option value="Colombia">Colombia</option>
-                      <option value="Ecuador">Ecuador</option>
-                      <option value="Bolivia">Bolivia</option>
-                    </select>
-                  </div>
-                )}
-
-                {country && (
-                  <div className="mt-6 rounded-xl bg-white border border-emerald-100 p-4">
-                    <p className="text-sm text-gray-700">
-                      Great. We&apos;ll start with{" "}
-                      <span className="font-semibold text-emerald-700">
-                        {country}
-                      </span>
-                      . Next, we&apos;ll help you identify your land using satellite imagery.
+                    <p>
+                      Once you outline your land, we'll automatically analyse:
                     </p>
-                  </div>
-                )}
 
-                {country && (
+                    <ul className="ml-5 list-disc space-y-2 text-sm text-gray-600">
+                      <li>🌿 Vegetation health</li>
+                      <li>⛰️ Terrain and slope</li>
+                      <li>💧 Water availability</li>
+                      <li>🔥 Environmental risks</li>
+                      <li>🌱 Restoration opportunities</li>
+                    </ul>
+
+                    <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-4">
+                      <p className="text-sm italic text-gray-600">
+                        Don't worry if you've never used satellite maps before.
+                        We'll guide you through every step of the process.
+                      </p>
+                    </div>
+
+                  </div>
+
                   <button
-                    className="mt-6 rounded-lg bg-emerald-600 px-6 py-3 font-semibold text-white hover:bg-emerald-700 transition-colors"
+                    onClick={() =>
+                      navigate("/curimana", {
+                        state: {
+                          initialLocation: [
+                            community,
+                            province,
+                            region,
+                            country,
+                          ]
+                            .filter(Boolean)
+                            .join(", "),
+                        },
+                      })
+                    }
+                    className="mt-8 rounded-xl bg-emerald-600 px-8 py-4 font-semibold text-white shadow-md transition-all hover:bg-emerald-700 hover:shadow-lg"
                   >
-                    🌍 Let's meet your land →
+                    🛰️ Start Satellite Discovery
                   </button>
-                )}
-              </div>
+
+                </div>
+              )}
+
             </>
           )}
+
         </div>
       )}
+
     </section>
   );
 }
