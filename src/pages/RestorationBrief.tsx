@@ -1,19 +1,24 @@
 import { useLocation } from "react-router-dom";
+import { buildRestorationAssessment } from "../lib/recommendations/builders/buildRestorationAssessment";
 
 export default function RestorationBrief() {
   const location = useLocation();
   const restorationData = location.state ?? {};
+
+  const assessment = buildRestorationAssessment(
+    restorationData.polygonAnalysis
+  );
   console.log(restorationData);
   console.log(restorationData.polygonAnalysis);
   console.log("Restoration Brief received:", restorationData);
 
-  const area =
-    restorationData.polygonAnalysis?.area_ha
-      ? `${restorationData.polygonAnalysis.area_ha.toFixed(2)} ha`
-      : "Pending analysis";
-  const ecosystem = "Pending analysis";
-  const risk = "Pending analysis";
-  const restorationPotential = "Pending analysis";
+  const area = assessment.area;
+  const ecosystem = assessment.ecosystem;
+  const risk = assessment.risk;
+  const restorationPotential = assessment.restorationPotential;
+  const ecologicalSummary = assessment.ecologicalSummary;
+  const recommendedSpecies = assessment.recommendedSpecies;
+  const restorationObjectives = assessment.restorationObjectives;
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-emerald-50 to-white">
@@ -71,7 +76,7 @@ export default function RestorationBrief() {
                     Ecosystem
                   </p>
                   <p className="mt-2 text-lg font-semibold text-gray-900">
-                    {area}
+                    {ecosystem}
                   </p>
                 </div>
 
@@ -80,7 +85,7 @@ export default function RestorationBrief() {
                     Risk
                   </p>
                   <p className="mt-2 text-lg font-semibold text-gray-900">
-                    {area}
+                    {risk}
                   </p>
                 </div>
 
@@ -89,7 +94,7 @@ export default function RestorationBrief() {
                     Restoration Potential
                   </p>
                   <p className="mt-2 text-lg font-semibold text-gray-900">
-                    {area}
+                    {restorationPotential}
                   </p>
                 </div>
 
@@ -107,10 +112,8 @@ export default function RestorationBrief() {
                 What FYNOS AI discovered
               </h2>
 
-              <p className="mt-5 leading-8 text-gray-600">
-                This section will contain an AI-generated interpretation of the
-                satellite observations, explaining the ecological condition of the
-                land in natural language.
+              <p className="mt-5 leading-8 text-gray-700 whitespace-pre-line">
+                {ecologicalSummary}
               </p>
 
             </section>
@@ -130,6 +133,180 @@ export default function RestorationBrief() {
                 impactful restoration objectives for this property before suggesting
                 species, activities, and implementation strategies.
               </p>
+
+              <div className="mt-8 space-y-4">
+
+                {restorationObjectives.map((objective) => (
+
+                  <div
+                    key={objective.title}
+                    className="rounded-2xl border border-emerald-100 bg-emerald-50 p-5"
+                  >
+
+                    <div className="flex items-center justify-between">
+
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        {objective.title}
+                      </h3>
+
+                      <span className="rounded-full bg-emerald-600 px-3 py-1 text-sm font-semibold text-white">
+                        {objective.priority}
+                      </span>
+
+                    </div>
+
+                    <p className="mt-3 text-gray-600">
+                      {objective.reason}
+                    </p>
+
+                  </div>
+
+                ))}
+
+              </div>
+
+              <div className="mt-8">
+
+                <h3 className="text-lg font-semibold text-gray-900">
+                  🌳 Recommended Native Species
+                </h3>
+
+                <div className="mt-6 space-y-4">
+
+                  {recommendedSpecies.map((species) => (
+
+                    <div
+                      key={species.scientificName}
+                      className="rounded-2xl border border-emerald-100 bg-emerald-50 p-5"
+                    >
+
+                      <div className="flex items-center justify-between">
+
+                        <div>
+
+                          <h4 className="text-lg font-bold text-gray-900">
+                            {species.commonName}
+                          </h4>
+
+                          <p className="italic text-sm text-gray-500">
+                            {species.scientificName}
+                          </p>
+
+                        </div>
+
+                        <div className="flex gap-2">
+
+                          <span className="rounded-full bg-green-600 px-3 py-1 text-sm font-semibold text-white">
+                            {species.suitability}
+                          </span>
+
+                          <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-800">
+                            Score {species.score}
+                          </span>
+
+                        </div>
+
+                      </div>
+
+                      <p className="mt-4 text-gray-700">
+                        {species.reason}
+                      </p>
+
+                      <div className="mt-3 rounded-xl bg-blue-50 p-3 text-sm text-blue-900">
+                        <strong>Why FYNOS AI recommends this species</strong><br />
+                        {species.explanation}
+                        {species.matchedConditions.length > 0 && (
+                          <div className="mt-4">
+
+                            <p className="text-sm font-semibold text-gray-800">
+                              Matched Conditions
+                            </p>
+
+                            <div className="mt-2 flex flex-wrap gap-2">
+
+                              {species.matchedConditions.map((condition) => (
+                                <span
+                                  key={condition}
+                                  className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-800"
+                                >
+                                  {condition}
+                                </span>
+                              ))}
+
+                            </div>
+
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="mt-4 grid gap-3 md:grid-cols-2">
+
+                        <div className="rounded-xl bg-white p-3">
+                          <strong>Ecological role</strong>
+                          <p className="mt-1 text-sm text-gray-600">
+                            {species.ecologicalRole}
+                          </p>
+                        </div>
+
+                        <div className="rounded-xl bg-white p-3">
+                          <strong>Carbon benefit</strong>
+                          <p className="mt-1 text-sm text-gray-600">
+                            {species.carbonBenefit}
+                          </p>
+
+                          <div className="mt-3 rounded-xl bg-white p-3">
+
+                            <div className="flex items-center justify-between">
+
+                              <strong>Recommendation confidence</strong>
+
+                              <span className="font-semibold text-emerald-700">
+                                {species.confidence}%
+                              </span>
+
+                            </div>
+
+                            <div className="mt-3 h-2 w-full rounded-full bg-gray-200">
+
+                              <div
+                                className="h-2 rounded-full bg-emerald-600 transition-all"
+                                style={{ width: `${species.confidence}%` }}
+                              />
+
+                            </div>
+
+                          </div>
+
+                          <div className="mt-3 text-xs text-gray-500">
+
+                            <div>
+                              Ecosystem: {species.scoreBreakdown.ecosystem}
+                            </div>
+
+                            <div>
+                              Restoration Potential: {species.scoreBreakdown.restorationPotential}
+                            </div>
+
+                            <div>
+                              Risk: {species.scoreBreakdown.risk}
+                            </div>
+
+                            <div>
+                              Ecological Role: {species.scoreBreakdown.ecologicalRole}
+                            </div>
+
+                          </div>
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  ))}
+
+                </div>
+
+              </div>
 
             </section>
 
