@@ -1,6 +1,6 @@
 import { RestorationAssessment } from "../../core/models/RestorationAssessment";
-import { recommendNativeSpecies } from "../../intelligence/ecological/nativeSpecies";
 import { recommendRestorationObjectives } from "../../intelligence/ecological/restorationObjectives";
+import { buildSpeciesRecommendations } from "./buildSpeciesRecommendations";
 
 function calculateRestorationPotential(
   ndvi: number,
@@ -51,6 +51,16 @@ export function buildRestorationAssessment(
       risk
     );
 
+  const recommendedSpecies =
+    buildSpeciesRecommendations(
+      ecosystem,
+      restorationPotential,
+      risk,
+      polygonAnalysis?.elevation ?? 0
+    );
+
+  console.log("Recommended Species:", recommendedSpecies);
+
   return {
     area: "Pending analysis",
 
@@ -66,16 +76,12 @@ export function buildRestorationAssessment(
       restorationPotential
     ),
 
-    recommendedSpecies: recommendNativeSpecies(
-      ecosystem,
-      restorationPotential,
-      risk,
-      polygonAnalysis?.elevation ?? 0
-    ),
+    recommendedSpecies,
 
-    restorationObjectives: recommendRestorationObjectives(
-      ecosystem,
-      risk
-    ),
+    restorationObjectives:
+      recommendRestorationObjectives(
+        ecosystem,
+        risk
+      ),
   };
 }

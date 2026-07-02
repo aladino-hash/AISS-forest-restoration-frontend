@@ -10,15 +10,6 @@ export function recommendNativeSpecies(
 ): SpeciesRecommendation[] {
 
   // First implementation:
-  // return our current curated species list.
-
-  if (ecosystem.toLowerCase().includes("purma")) {
-    return amazonSpecies.filter(
-      species =>
-        species.ecologicalRole === "Pioneer" ||
-        species.ecologicalRole === "Nitrogen Fixer"
-    );
-  }
 
   const species = amazonSpecies.map((species) => ({
     ...species,
@@ -125,9 +116,22 @@ export function recommendNativeSpecies(
       }
 
       if (ecosystem.toLowerCase().includes("purma")) {
-        reasons.push("the property is in a secondary forest (purma)");
-        matchedConditions.push("Secondary forest (Purma)");
-        points += 1;
+
+          if (
+            s.ecologicalRole === "Pioneer" ||
+            s.ecologicalRole === "Nitrogen Fixer"
+          ) {
+              points += 2;
+
+              reasons.push(
+                "the property is a secondary forest where pioneer species are preferred"
+              );
+
+              matchedConditions.push(
+                "Secondary forest (Purma)"
+              );
+          }
+
       }
 
       if (
@@ -152,8 +156,22 @@ export function recommendNativeSpecies(
         s.scoreBreakdown
       );
 
+      console.log(
+        `${s.commonName}`,
+        {
+          points,
+          max: s.maximumScore
+        }
+      );
+
       s.confidence = Math.round(
         (points / s.maximumScore) * 100
+      );
+
+      console.log(
+        "BREAKDOWN",
+        s.commonName,
+        s.scoreBreakdown
       );
 
       s.explanation =

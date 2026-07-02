@@ -3,12 +3,16 @@ import { SpeciesRecommendation } from "../../core/models/SpeciesRecommendation";
 
 export function buildSpeciesRecommendations(
   ecosystem: string,
-  restorationPotential: string
+  restorationPotential: string,
+  risk: string,
+  elevation: number
 ): SpeciesRecommendation[] {
 
   return recommendNativeSpecies(
     ecosystem,
-    restorationPotential
+    restorationPotential,
+    risk,
+    elevation
   );
 
 }
