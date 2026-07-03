@@ -1,6 +1,7 @@
 import { RestorationAssessment } from "../../core/models/RestorationAssessment";
 import { recommendRestorationObjectives } from "../../intelligence/ecological/restorationObjectives";
 import { buildSpeciesRecommendations } from "./buildSpeciesRecommendations";
+import { buildAgroforestrySystems } from "./buildAgroforestrySystems";
 
 function calculateRestorationPotential(
   ndvi: number,
@@ -59,6 +60,17 @@ export function buildRestorationAssessment(
       polygonAnalysis?.elevation ?? 0
     );
 
+  const recommendedAgroforestrySystems =
+    buildAgroforestrySystems(
+      ecosystem,
+      restorationPotential,
+      risk
+    );
+  console.log(
+    "Recommended Agroforestry Systems:",
+    recommendedAgroforestrySystems
+  );
+
   console.log("Recommended Species:", recommendedSpecies);
 
   return {
@@ -77,6 +89,8 @@ export function buildRestorationAssessment(
     ),
 
     recommendedSpecies,
+
+    recommendedAgroforestrySystems,
 
     restorationObjectives:
       recommendRestorationObjectives(

@@ -1,0 +1,97 @@
+import { useEffect, useState } from "react";
+import ProjectBoundary from "./mapLayers/ProjectBoundary";
+import BaseImagery from "./mapLayers/BaseImagery";
+import WorkspaceToolbar from "./WorkspaceToolbar";
+import TreesLayer from "./mapLayers/TreesLayer";
+
+import {
+  MapContainer,
+  TileLayer,
+  Polygon,
+  useMap,
+} from "react-leaflet";
+
+import "leaflet/dist/leaflet.css";
+
+type ProjectMapProps = {
+  project: any;
+};
+
+function FitProject({
+  polygon,
+}: {
+  polygon: [number, number][];
+}) {
+
+  const map = useMap();
+
+  useEffect(() => {
+    if (!polygon?.length) return;
+
+    map.fitBounds(polygon);
+
+  }, [map, polygon]);
+
+  return null;
+
+}
+
+export default function ProjectMap({ project }: ProjectMapProps) {
+
+  const boundary =
+    project?.polygon?.geometry?.coordinates?.[0] ?? null;
+
+  const polygon =
+    boundary?.map(([lng, lat]: [number, number]) => [lat, lng]);
+
+    const [visibleLayers, setVisibleLayers] = useState({
+      boundary: true,
+      trees: false,
+      drone: false,
+      dem: false,
+      vegetation: false,
+      ndvi: false,
+      ai: false,
+    });
+    const [activeTool, setActiveTool] =
+      useState("Project Boundary");
+    console.log("Workspace polygon:", polygon);
+
+  return (
+    <div className="relative h-full w-full">
+
+      <WorkspaceToolbar
+        activeTool={activeTool}
+        setActiveTool={setActiveTool}
+        visibleLayers={visibleLayers}
+        setVisibleLayers={setVisibleLayers}
+      />
+
+      <MapContainer
+      style={{ width: "100%", height: "100%" }}
+      center={[-8.84, -74.95]}
+      zoom={15}
+      scrollWheelZoom
+    >
+      <BaseImagery />
+      {polygon && (
+        <FitProject
+          polygon={polygon}
+        />
+      )}
+
+      {polygon && (
+        <ProjectBoundary
+          polygon={polygon}
+          visible={visibleLayers.boundary}
+        />
+      )}
+
+      <TreesLayer
+        visible={visibleLayers.trees}
+      />
+    </MapContainer>
+   </div>
+  );
+
+}

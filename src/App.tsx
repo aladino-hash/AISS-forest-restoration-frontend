@@ -18,6 +18,7 @@ import ScenarioSimulator from "./pages/ScenarioSimulator";
 import NotFound from "./pages/NotFound";
 import UnderConstruction from "./pages/UnderConstruction";
 import RestorationBrief from "./pages/RestorationBrief";
+import RestorationWorkspace from "./pages/RestorationWorkspace";
 
 const queryClient = new QueryClient();
 
@@ -74,7 +75,7 @@ const App = () => (
             path="/restoration"
             element={
               experimentalEnabled
-                ? <RestorationMap />
+                ? <RestorationWorkspace />
                 : <UnderConstruction />
             }
           />

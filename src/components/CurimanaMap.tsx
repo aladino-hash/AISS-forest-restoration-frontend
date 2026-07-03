@@ -371,6 +371,7 @@ const CurimanaMap = ({
             onClick={() =>
               navigate("/restoration-brief", {
                 state: {
+                  polygon,
                   polygonAnalysis,
                 },
               })

@@ -1,8 +1,11 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { buildRestorationAssessment } from "../lib/recommendations/builders/buildRestorationAssessment";
+import { generateRestorationVerdict } from "../lib/intelligence/ecological/restorationVerdict";
 
 export default function RestorationBrief() {
   const location = useLocation();
+  console.log("Location state:", location.state);
+  const navigate = useNavigate();
   const restorationData = location.state ?? {};
 
   const assessment = buildRestorationAssessment(
@@ -11,13 +14,24 @@ export default function RestorationBrief() {
   console.log(restorationData);
   console.log(restorationData.polygonAnalysis);
   console.log("Restoration Brief received:", restorationData);
+  console.log("Project being sent:", {
+    polygon: restorationData.polygon,
+    polygonAnalysis: restorationData.polygonAnalysis,
+    assessment,
+  });
 
   const area = assessment.area;
   const ecosystem = assessment.ecosystem;
   const risk = assessment.risk;
   const restorationPotential = assessment.restorationPotential;
+  const verdict =
+    generateRestorationVerdict(
+      restorationPotential
+    );
   const ecologicalSummary = assessment.ecologicalSummary;
   const recommendedSpecies = assessment.recommendedSpecies;
+  const recommendedAgroforestrySystems =
+    assessment.recommendedAgroforestrySystems;
   const restorationObjectives = assessment.restorationObjectives;
 
   return (
@@ -40,6 +54,22 @@ export default function RestorationBrief() {
           Before we begin designing a restoration project, let's explore what we've discovered together.
         </p>
 
+        <section className="mt-10 rounded-3xl border border-emerald-200 bg-gradient-to-r from-emerald-700 to-green-600 p-8 text-white shadow-lg">
+
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-100">
+            FYNOS AI Verdict
+          </p>
+
+          <h2 className="mt-3 text-3xl font-bold">
+            {verdict.title}
+          </h2>
+
+          <p className="mt-5 max-w-4xl leading-8 text-emerald-50">
+            {verdict.description}
+          </p>
+
+        </section>
+
         <div className="mt-12 grid gap-8 lg:grid-cols-3">
 
           <div className="lg:col-span-2 space-y-8">
@@ -50,14 +80,14 @@ export default function RestorationBrief() {
                 Your Land
               </p>
 
-              <h2 className="mt-3 text-2xl font-bold text-gray-900">
-                Your land at a glance
+              <h2 className="mt-3 text-3xl font-bold text-gray-900">
+                Restoration Feasibility
               </h2>
 
-              <p className="mt-4 leading-7 text-gray-600">
-                This summary combines satellite observations and AI interpretation
-                to provide an initial understanding of your property's ecological
-                condition and restoration potential.
+              <p className="mt-4 leading-8 text-gray-600">
+                Before designing a restoration strategy, FYNOS AI evaluates whether
+                the land has the ecological conditions needed for successful restoration.
+                The indicators below summarize the site's current restoration feasibility.
               </p>
 
               <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -105,11 +135,11 @@ export default function RestorationBrief() {
             <section className="rounded-3xl border border-emerald-100 bg-white p-8 shadow-sm">
 
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">
-                What We Discovered Together
+                Step 1 · Environmental Diagnosis
               </p>
 
               <h2 className="mt-3 text-2xl font-bold text-gray-900">
-                What FYNOS AI discovered
+                Environmental Diagnosis
               </h2>
 
               <p className="mt-5 leading-8 text-gray-700 whitespace-pre-line">
@@ -166,7 +196,158 @@ export default function RestorationBrief() {
               </div>
 
               <div className="mt-8">
+                <section className="rounded-3xl border border-emerald-100 bg-white p-8 shadow-sm mt-8">
 
+                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">
+                    Recommended Restoration Strategy
+                  </p>
+
+                  <h2 className="mt-3 text-3xl font-bold text-gray-900">
+                    🌱 AI Recommended Restoration Strategy
+                  </h2>
+
+                  <p className="mt-5 leading-8 text-gray-600">
+                    Rather than recommending individual species, FYNOS AI designs complete
+                    restoration systems that combine ecological recovery, productive
+                    agroforestry, biodiversity conservation, and long-term economic resilience.
+                    This strategy is tailored to your land's environmental conditions.
+                  </p>
+
+                  <div className="mt-8 space-y-6">
+
+                    {recommendedAgroforestrySystems.map((system) => (
+
+                      <div
+                        key={system.id}
+                        className="rounded-2xl border border-emerald-100 bg-emerald-50 p-6"
+                      >
+
+                        <div className="flex items-center justify-between">
+
+                          <div>
+
+                            <h3 className="text-xl font-bold text-gray-900">
+                              {system.name}
+                            </h3>
+
+                            <p className="mt-2 text-gray-600">
+                              {system.description}
+                            </p>
+
+                            <div className="mt-6 rounded-2xl bg-blue-50 border border-blue-100 p-5">
+
+                              <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">
+                                Mission
+                              </p>
+
+                              <p className="mt-3 leading-7 text-gray-700">
+                                Restore this landscape through productive agroforestry by combining
+                                ecological regeneration, biodiversity recovery, long-term carbon storage
+                                and sustainable income generation adapted to the environmental conditions
+                                detected by FYNOS AI.
+                              </p>
+
+                            </div>
+
+                            <div className="mt-8 space-y-4">
+
+                              {system.phases.map((phase) => (
+
+                                <div
+                                  key={phase.phase}
+                                  className="rounded-xl bg-white p-5 border border-emerald-100"
+                                >
+
+                                  <div className="flex items-center justify-between">
+
+                                    <h4 className="text-lg font-semibold text-gray-900">
+                                      Phase {phase.phase}
+                                    </h4>
+
+                                    <span className="rounded-full bg-emerald-600 px-3 py-1 text-sm font-semibold text-white">
+                                      Step {phase.phase}
+                                    </span>
+
+                                  </div>
+
+                                  <p className="mt-3 text-gray-700">
+                                    {phase.objective}
+                                  </p>
+
+                                  <div className="mt-4 flex flex-wrap gap-2">
+
+                                    {phase.species.map((species) => (
+
+                                      <span
+                                        key={species}
+                                        className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-800"
+                                      >
+                                        {species}
+                                      </span>
+
+                                    ))}
+
+                                  </div>
+
+                                </div>
+
+                              ))}
+
+                            </div>
+
+                            <div className="mt-8 rounded-2xl bg-emerald-900 p-6 text-white">
+
+                              <h4 className="text-lg font-bold">
+                                Expected Benefits
+                              </h4>
+
+                              <div className="mt-6 grid gap-4 md:grid-cols-3">
+
+                                <div>
+                                  <p className="text-sm uppercase tracking-wide text-emerald-200">
+                                    Biodiversity
+                                  </p>
+
+                                  <p className="mt-2 font-medium">
+                                    {system.expectedBenefits.biodiversity}
+                                  </p>
+                                </div>
+
+                                <div>
+                                  <p className="text-sm uppercase tracking-wide text-emerald-200">
+                                    Carbon
+                                  </p>
+
+                                  <p className="mt-2 font-medium">
+                                    {system.expectedBenefits.carbon}
+                                  </p>
+                                </div>
+
+                                <div>
+                                  <p className="text-sm uppercase tracking-wide text-emerald-200">
+                                    Economic Impact
+                                  </p>
+
+                                  <p className="mt-2 font-medium">
+                                    {system.expectedBenefits.economic}
+                                  </p>
+                                </div>
+
+                              </div>
+
+                            </div>
+
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                    ))}
+
+                  </div>
+
+                </section>
                 <h3 className="text-lg font-semibold text-gray-900">
                   🌳 Recommended Native Species
                 </h3>
@@ -310,28 +491,6 @@ export default function RestorationBrief() {
 
             </section>
 
-            <section className="rounded-3xl border border-emerald-100 bg-white p-8 shadow-sm">
-
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">
-                Your Journey Continues
-              </p>
-
-              <h2 className="mt-3 text-2xl font-bold text-gray-900">
-                Ready to begin restoration?
-              </h2>
-
-              <p className="mt-5 leading-8 text-gray-600">
-                Once you're satisfied with this assessment, create a restoration project to begin planning, monitoring, collaborating with experts, and tracking progress over time.
-              </p>
-
-              <button
-                className="mt-8 rounded-xl bg-emerald-600 px-8 py-4 font-semibold text-white shadow-md transition-all hover:bg-emerald-700 hover:shadow-lg"
-              >
-                🌱 Create Restoration Project
-              </button>
-
-            </section>
-
           </div>
 
           <aside className="space-y-6">
@@ -363,6 +522,42 @@ export default function RestorationBrief() {
           </aside>
 
         </div>
+
+        <section className="rounded-3xl bg-gradient-to-r from-emerald-700 to-green-600 p-10 text-white shadow-xl">
+
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-100">
+            Ready to Begin?
+          </p>
+
+          <h2 className="mt-3 text-3xl font-bold">
+            Your restoration strategy is ready.
+          </h2>
+
+          <p className="mt-5 max-w-3xl leading-8 text-emerald-50">
+            FYNOS AI has completed the ecological assessment and designed a restoration
+            strategy tailored to your land. The next step is to transform this
+            recommendation into a living restoration project where you will plan,
+            execute and monitor every stage of implementation.
+          </p>
+
+          <button
+            onClick={() =>
+              navigate("/restoration", {
+                state: {
+                  project: {
+                    polygon: restorationData.polygon,
+                    polygonAnalysis: restorationData.polygonAnalysis,
+                    assessment,
+                  },
+                },
+              })
+            }
+            className="mt-8 rounded-2xl bg-white px-8 py-4 text-lg font-semibold text-emerald-700 shadow-lg transition hover:scale-105"
+          >
+            🌱 Create Restoration Project
+          </button>
+
+        </section>
 
       </div>
     </main>
