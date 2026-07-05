@@ -6,14 +6,14 @@ export default function ProjectInformationPanel({
   project,
 }: Props) {
   return (
-    <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+    <div className="w-[340px] rounded-3xl border border-white/30 bg-white/92 p-6 shadow-2xl backdrop-blur-xl">
 
-      <h2 className="text-xl font-bold text-gray-900">
-        Project Information
+      <h2 className="text-2xl font-bold text-gray-900">
+        Project Passport
       </h2>
 
       <p className="mt-2 text-sm text-gray-500">
-        Digital Twin Overview
+        Digital Twin Identity
       </p>
 
       <div className="mt-5 rounded-2xl bg-emerald-50 p-4">

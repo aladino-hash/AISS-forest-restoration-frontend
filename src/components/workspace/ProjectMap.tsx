@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import ProjectBoundary from "./mapLayers/ProjectBoundary";
 import BaseImagery from "./mapLayers/BaseImagery";
-import WorkspaceToolbar from "./WorkspaceToolbar";
+import WorkspaceToolbar from "./toolbars/WorkspaceToolbar";
 import TreesLayer from "./mapLayers/TreesLayer";
 import DroneLayer from "./mapLayers/DroneLayer";
 import DEMLayer from "./mapLayers/DEMLayer";
 import VegetationLayer from "./mapLayers/VegetationLayer";
 import NDVILayer from "./mapLayers/NDVILayer";
 import AILayer from "./mapLayers/AILayer";
-import MapNavigation from "./MapNavigation";
-
+import MapNavigation from "./navigation/MapNavigation";
+import ProjectInformationPanel from "./panels/ProjectInformationPanel";
 import {
   MapContainer,
   ScaleControl,
@@ -63,7 +63,7 @@ export default function ProjectMap({ project }: ProjectMapProps) {
     console.log("Workspace polygon:", polygon);
 
   return (
-    <div className="relative h-full w-full">
+    <div className="relative h-screen w-screen overflow-hidden">
 
       <WorkspaceToolbar
         activeTool={activeTool}
@@ -116,6 +116,9 @@ export default function ProjectMap({ project }: ProjectMapProps) {
         visible={visibleLayers.ai}
       />
     </MapContainer>
+    <div className="absolute right-6 top-6 z-[1200]">
+      <ProjectInformationPanel project={project} />
+    </div>
    </div>
   );
 
