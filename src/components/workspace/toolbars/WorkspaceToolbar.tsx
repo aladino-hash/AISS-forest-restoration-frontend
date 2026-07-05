@@ -1,28 +1,24 @@
-import WorkspaceHeader from "../WorkspaceHeader";
-import LayerToolbar from "./LayerToolbar";
+import { useEffect } from "react";
+import WorkspaceExplorer from "../navigation/WorkspaceExplorer";
+import { workspaceConfig } from "../navigation/workspaceConfig";
+
+type LayerState = {
+  boundary: boolean;
+  trees: boolean;
+  drone: boolean;
+  dem: boolean;
+  vegetation: boolean;
+  ndvi: boolean;
+  ai: boolean;
+};
 
 type Props = {
   activeTool: string;
   setActiveTool: (tool: string) => void;
-  visibleLayers: {
-    boundary: boolean;
-    trees: boolean;
-    drone: boolean;
-    dem: boolean;
-    vegetation: boolean;
-    ndvi: boolean;
-    ai: boolean;
-  };
+
+  visibleLayers: LayerState;
   setVisibleLayers: React.Dispatch<
-    React.SetStateAction<{
-      boundary: boolean;
-      trees: boolean;
-      drone: boolean;
-      dem: boolean;
-      vegetation: boolean;
-      ndvi: boolean;
-      ai: boolean;
-    }>
+    React.SetStateAction<LayerState>
   >;
 };
 
@@ -32,16 +28,31 @@ export default function WorkspaceToolbar({
   visibleLayers,
   setVisibleLayers,
 }: Props) {
-  return (
-    <div className="absolute left-6 top-6 z-[1000] flex flex-col gap-4">
-      <WorkspaceHeader />
 
-      <LayerToolbar
+  useEffect(() => {
+
+    const workspace =
+      workspaceConfig[
+        activeTool as keyof typeof workspaceConfig
+      ];
+
+    if (workspace?.layers) {
+      setVisibleLayers(workspace.layers);
+
+      console.log("Workspace:", activeTool);
+      console.log("Layers:", workspace.layers);
+    }
+
+  }, [activeTool, setVisibleLayers]);
+
+  return (
+    <div className="absolute left-6 top-24 z-[1000] flex flex-col gap-4">
+
+      <WorkspaceExplorer
         activeTool={activeTool}
         setActiveTool={setActiveTool}
-        visibleLayers={visibleLayers}
-        setVisibleLayers={setVisibleLayers}
       />
+
     </div>
   );
 }

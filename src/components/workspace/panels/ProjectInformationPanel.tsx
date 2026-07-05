@@ -1,117 +1,115 @@
+import { workspaceConfig } from "../navigation/workspaceConfig";
+import VegetationPanel from "./VegetationPanel";
+
 type Props = {
   project: any;
+  activeTool: string;
 };
 
 export default function ProjectInformationPanel({
   project,
+  activeTool,
 }: Props) {
-  return (
-    <div className="w-[340px] rounded-3xl border border-white/30 bg-white/92 p-6 shadow-2xl backdrop-blur-xl">
 
-      <h2 className="text-2xl font-bold text-gray-900">
-        Project Passport
+   console.log("Active Workspace:", activeTool);
+   const workspace =
+      workspaceConfig[
+        activeTool as keyof typeof workspaceConfig
+      ] ?? workspaceConfig["Project Boundary"];
+
+  return (
+    <div className="w-[300px] rounded-3xl border border-white/20 bg-white/90 p-5 shadow-2xl backdrop-blur-xl">
+
+      <h2 className="text-2xl font-semibold text-gray-900">
+        {activeTool}
       </h2>
 
-      <p className="mt-2 text-sm text-gray-500">
-        Digital Twin Identity
+      <p className="mt-1 text-sm text-gray-500">
+        {workspace.description}
       </p>
+
+      {/* Health */}
 
       <div className="mt-5 rounded-2xl bg-emerald-50 p-4">
 
-        <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700">
           Project Health
         </p>
 
         <div className="mt-2 flex items-end justify-between">
 
-          <span className="text-4xl font-bold text-emerald-700">
-            87
+          <span className="text-2xl font-bold text-emerald-700">
+            {workspace.score}
           </span>
 
-          <span className="mb-1 rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-700">
-            Excellent
+          <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
+            {workspace.status}
           </span>
 
         </div>
 
       </div>
 
-      <div className="mt-6 space-y-4">
+      {/* Details */}
 
-        <InfoRow
-          label="Project"
-          value={project.name ?? "Untitled Project"}
-        />
+      <div className="mt-5">
 
-        <InfoRow
-          label="Area"
-          value={`${project.area ?? "--"} ha`}
-        />
+        {activeTool === "Vegetation" ? (
 
-        <StatusRow
-          label="Verification"
-          status={project.verification ?? "Satellite"}
-        />
-
-        <StatusRow
-          label="Stage"
-          status={project.stage ?? "Planning"}
-        />
-
-        <InfoRow
-          label="Ecosystem"
-          value={project.assessment.ecosystem}
-        />
-
-        <InfoRow
-          label="Restoration Potential"
-          value={project.assessment.restorationPotential}
-        />
-
-        <InfoRow
-          label="Risk"
-          value={project.assessment.risk}
-        />
-
-        <InfoRow
-          label="Recommended Species"
-          value={`${project.assessment.recommendedSpecies.length}`}
-        />
-
-        <div className="border-t border-gray-200 pt-5">
-
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">
-            Restoration Metrics
-          </h3>
-
-          <InfoRow
-            label="Elevation"
-            value={`${Math.round(project.polygonAnalysis?.elevation ?? 0)} m`}
+          <VegetationPanel
+            project={project}
           />
 
-          <InfoRow
-            label="Slope"
-            value={`${(project.polygonAnalysis?.slope ?? 0).toFixed(1)}°`}
-          />
+        ) : (
 
-          <InfoRow
-            label="NDVI"
-            value={`${(project.polygonAnalysis?.ndvi ?? 0).toFixed(2)}`}
-          />
+          <div className="space-y-1">
 
-          <InfoRow
-            label="Carbon"
-            value={`${project.polygonAnalysis?.carbon_estimate_tons_per_ha ?? "--"} t/ha`}
-          />
+            <InfoRow
+              label="Project"
+              value={project.name ?? "Untitled Project"}
+            />
 
-          <InfoRow
-            label="Biodiversity"
-            value={`${project.polygonAnalysis?.biodiversity_score ?? "--"}`}
-          />
+            <InfoRow
+              label="Area"
+              value={`${project.area ?? "--"} ha`}
+            />
 
-        </div>
+            <StatusRow
+              label="Verification"
+              status={project.verification ?? "Satellite"}
+            />
+
+            <StatusRow
+              label="Stage"
+              status={project.stage ?? "Planning"}
+            />
+
+            <InfoRow
+              label="Ecosystem"
+              value={project.assessment.ecosystem}
+            />
+
+            <InfoRow
+              label="Restoration Potential"
+              value={project.assessment.restorationPotential}
+            />
+
+            <InfoRow
+              label="Risk"
+              value={project.assessment.risk}
+            />
+
+          </div>
+
+        )}
 
       </div>
+
+      {/* Footer */}
+
+      <button className="mt-5 flex w-full items-center justify-center rounded-2xl bg-gray-100 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-200">
+        View all details →
+      </button>
 
     </div>
   );
@@ -127,13 +125,13 @@ function InfoRow({
   value,
 }: RowProps) {
   return (
-    <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+    <div className="flex items-center justify-between border-b border-gray-100 pb-1">
 
       <span className="text-sm text-gray-500">
         {label}
       </span>
 
-      <span className="text-right font-semibold text-gray-900">
+      <span className="max-w-[150px] text-right text-sm font-semibold text-gray-900">
         {value}
       </span>
 
@@ -154,26 +152,20 @@ function StatusRow({
   const color =
     status === "Drone Verified"
       ? "bg-green-100 text-green-700"
-
       : status === "Satellite"
       ? "bg-blue-100 text-blue-700"
-
       : status === "Planning"
       ? "bg-slate-100 text-slate-700"
-
       : status === "Planting"
       ? "bg-lime-100 text-lime-700"
-
       : status === "Monitoring"
       ? "bg-emerald-100 text-emerald-700"
-
       : status === "Completed"
       ? "bg-purple-100 text-purple-700"
-
       : "bg-amber-100 text-amber-700";
 
   return (
-    <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+    <div className="flex items-center justify-between border-b border-gray-100 pb-2">
 
       <span className="text-sm text-gray-500">
         {label}

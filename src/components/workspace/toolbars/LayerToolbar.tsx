@@ -1,43 +1,53 @@
+import {
+  Activity,
+  Radar,
+  Leaf,
+  MapPinned,
+  Mountain,
+  Sparkles,
+  Trees,
+} from "lucide-react";
+
 const tools = [
   {
     id: "boundary",
-    icon: "📍",
+    icon: MapPinned,
     title: "Project Boundary",
     status: "active",
   },
   {
     id: "trees",
-    icon: "🌳",
+    icon: Trees,
     title: "Trees & Species",
     status: "active",
   },
   {
     id: "drone",
-    icon: "🛰",
+    icon: Radar,
     title: "Drone Verification",
     status: "active",
   },
   {
     id: "dem",
-    icon: "⛰",
+    icon: Mountain,
     title: "Digital Elevation Model",
     status: "active",
   },
   {
     id: "vegetation",
-    icon: "🌿",
+    icon: Leaf,
     title: "Vegetation",
     status: "active",
   },
   {
     id: "ndvi",
-    icon: "📈",
+    icon: Activity,
     title: "NDVI & Health",
     status: "active",
   },
   {
     id: "ai",
-    icon: "🤖",
+    icon: Sparkles,
     title: "AI Insights",
     status: "active",
   },
@@ -76,42 +86,47 @@ export default function LayerToolbar({
 }: Props) {
   return (
     <div className="overflow-hidden rounded-3xl border border-white/40 bg-white/90 shadow-2xl backdrop-blur-xl">
-      {tools.map((tool, index) => (
-        <button
-          key={tool.id}
-          title={tool.title}
-          onClick={() => {
-            setActiveTool(tool.title);
+      {tools.map((tool, index) => {
+        const Icon = tool.icon;
 
-            setVisibleLayers((prev) => ({
-              ...prev,
-              [tool.id]:
-                !prev[tool.id as keyof typeof prev],
-            }));
-          }}
-          className={`relative flex h-14 w-14 items-center justify-center text-xl transition-all duration-200 ${
-            tool.status === "active"
-              ? "cursor-pointer hover:bg-emerald-50 hover:scale-105"
-              : "cursor-not-allowed opacity-50"
-          } ${
-            visibleLayers[
-              tool.id as keyof typeof visibleLayers
-            ]
-              ? "bg-emerald-100 text-emerald-800 shadow-inner"
-              : ""
-          } ${
-            index !== tools.length - 1
-              ? "border-b border-gray-200"
-              : ""
-          }`}
-        >
-          {tool.icon}
+        return (
+          <button
+            key={tool.id}
+            title={tool.title}
+            onClick={() => {
+              setActiveTool(tool.title);
 
-          {tool.status === "coming" && (
-            <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-amber-400" />
-          )}
-        </button>
-      ))}
+              setVisibleLayers((prev) => ({
+                ...prev,
+                [tool.id]: !prev[
+                  tool.id as keyof typeof prev
+                ],
+              }));
+            }}
+            className={`relative flex h-14 w-14 items-center justify-center transition-all duration-200 ${
+              tool.status === "active"
+                ? "cursor-pointer hover:scale-105 hover:bg-emerald-50"
+                : "cursor-not-allowed opacity-50"
+            } ${
+              visibleLayers[
+                tool.id as keyof typeof visibleLayers
+              ]
+                ? "bg-emerald-100 text-emerald-800 shadow-inner"
+                : "text-gray-700"
+            } ${
+              index !== tools.length - 1
+                ? "border-b border-gray-200"
+                : ""
+            }`}
+          >
+            <Icon size={22} strokeWidth={2} />
+
+            {tool.status === "coming" && (
+              <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-amber-400" />
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }
