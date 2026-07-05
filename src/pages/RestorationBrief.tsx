@@ -541,17 +541,39 @@ export default function RestorationBrief() {
           </p>
 
           <button
-            onClick={() =>
+            onClick={() => {
+
+              console.log(
+                "Polygon Analysis:",
+                restorationData.polygonAnalysis
+              );
+
               navigate("/restoration", {
                 state: {
                   project: {
+                    id: crypto.randomUUID(),
+
+                    name: "Curimaná Restoration Project",
+
+                    area:
+                      restorationData.polygonAnalysis?.area_hectares ??
+                      restorationData.polygonAnalysis?.areaHectares ??
+                      "--",
+
+                    verification: "Satellite",
+
+                    createdAt: new Date().toISOString(),
+
                     polygon: restorationData.polygon,
+
                     polygonAnalysis: restorationData.polygonAnalysis,
+
                     assessment,
                   },
                 },
-              })
-            }
+              });
+
+            }}
             className="mt-8 rounded-2xl bg-white px-8 py-4 text-lg font-semibold text-emerald-700 shadow-lg transition hover:scale-105"
           >
             🌱 Create Restoration Project

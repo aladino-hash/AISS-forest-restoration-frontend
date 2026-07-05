@@ -3,11 +3,16 @@ import ProjectBoundary from "./mapLayers/ProjectBoundary";
 import BaseImagery from "./mapLayers/BaseImagery";
 import WorkspaceToolbar from "./WorkspaceToolbar";
 import TreesLayer from "./mapLayers/TreesLayer";
+import DroneLayer from "./mapLayers/DroneLayer";
+import DEMLayer from "./mapLayers/DEMLayer";
+import VegetationLayer from "./mapLayers/VegetationLayer";
+import NDVILayer from "./mapLayers/NDVILayer";
+import AILayer from "./mapLayers/AILayer";
+import MapNavigation from "./MapNavigation";
 
 import {
   MapContainer,
-  TileLayer,
-  Polygon,
+  ScaleControl,
   useMap,
 } from "react-leaflet";
 
@@ -66,14 +71,18 @@ export default function ProjectMap({ project }: ProjectMapProps) {
         visibleLayers={visibleLayers}
         setVisibleLayers={setVisibleLayers}
       />
-
       <MapContainer
-      style={{ width: "100%", height: "100%" }}
-      center={[-8.84, -74.95]}
-      zoom={15}
-      scrollWheelZoom
-    >
+        zoomControl={false}
+        style={{ width: "100%", height: "100%" }}
+        center={[-8.84, -74.95]}
+        zoom={15}
+        scrollWheelZoom
+      >
+
+      <MapNavigation />
+
       <BaseImagery />
+
       {polygon && (
         <FitProject
           polygon={polygon}
@@ -86,9 +95,25 @@ export default function ProjectMap({ project }: ProjectMapProps) {
           visible={visibleLayers.boundary}
         />
       )}
+      <ScaleControl position="bottomleft" />
 
       <TreesLayer
         visible={visibleLayers.trees}
+      />
+      <DroneLayer
+        visible={visibleLayers.drone}
+      />
+      <DEMLayer
+        visible={visibleLayers.dem}
+      />
+      <VegetationLayer
+        visible={visibleLayers.vegetation}
+      />
+      <NDVILayer
+        visible={visibleLayers.ndvi}
+      />
+      <AILayer
+        visible={visibleLayers.ai}
       />
     </MapContainer>
    </div>
