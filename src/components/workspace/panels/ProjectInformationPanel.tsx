@@ -1,14 +1,39 @@
-import { workspaceConfig } from "../navigation/workspaceConfig";
+import AIAnalysisPanel from "./AIAnalysisPanel";
+import AIRestorationCard from "./AIRestorationCard";
+import AIStrategyPanel from "./AIStrategyPanel";
 import VegetationPanel from "./VegetationPanel";
+import { workspaceConfig } from "../navigation/workspaceConfig";
+
+type MissionState =
+  | "passport"
+  | "analysis"
+  | "strategy"
+  | "visualization"
+  | "execution"
+  | "monitoring";
 
 type Props = {
   project: any;
   activeTool: string;
+
+  missionState: MissionState;
+  setMissionState: React.Dispatch<
+    React.SetStateAction<MissionState>
+  >;
+
+  visualizationMode: "current" | "future";
+  setVisualizationMode: React.Dispatch<
+    React.SetStateAction<"current" | "future">
+  >;
 };
 
 export default function ProjectInformationPanel({
   project,
   activeTool,
+  missionState,
+  setMissionState,
+  visualizationMode,
+  setVisualizationMode,
 }: Props) {
 
    console.log("Active Workspace:", activeTool);
@@ -18,7 +43,24 @@ export default function ProjectInformationPanel({
       ] ?? workspaceConfig["Project Boundary"];
 
   return (
-    <div className="w-[300px] rounded-3xl border border-white/20 bg-white/90 p-5 shadow-2xl backdrop-blur-xl">
+    <div
+      className="
+        h-[calc(100vh-120px)]
+        w-[320px]
+        overflow-y-auto
+        rounded-3xl
+        border
+        border-white/20
+        bg-white/90
+        p-5
+        shadow-2xl
+        backdrop-blur-xl
+        scrollbar-thin
+        scrollbar-track-transparent
+        scrollbar-thumb-gray-300
+        scrollbar-thumb-rounded-full
+      "
+    >
 
       <h2 className="text-2xl font-semibold text-gray-900">
         {activeTool}
@@ -50,54 +92,117 @@ export default function ProjectInformationPanel({
 
       </div>
 
-      {/* Details */}
+      {/* =====================================
+          Main Mission Content
+      ===================================== */}
 
       <div className="mt-5">
 
-        {activeTool === "Vegetation" ? (
+        {/* ================= Passport ================= */}
 
-          <VegetationPanel
-            project={project}
+        {missionState === "passport" && (
+
+          <>
+
+            <AIRestorationCard
+              onStart={() => setMissionState("analysis")}
+            />
+
+            <div className="mt-5">
+
+              {activeTool === "Vegetation" ? (
+
+                <VegetationPanel
+                  project={project}
+                />
+
+              ) : (
+
+                <div className="space-y-1">
+
+                  <InfoRow
+                    label="Project"
+                    value={project.name ?? "Untitled Project"}
+                  />
+
+                  <InfoRow
+                    label="Area"
+                    value={`${project.area ?? "--"} ha`}
+                  />
+
+                  <StatusRow
+                    label="Verification"
+                    status={project.verification ?? "Satellite"}
+                  />
+
+                  <StatusRow
+                    label="Stage"
+                    status={project.stage ?? "Planning"}
+                  />
+
+                  <InfoRow
+                    label="Ecosystem"
+                    value={project.assessment.ecosystem}
+                  />
+
+                  <InfoRow
+                    label="Restoration Potential"
+                    value={project.assessment.restorationPotential}
+                  />
+
+                  <InfoRow
+                    label="Risk"
+                    value={project.assessment.risk}
+                  />
+
+                </div>
+
+              )}
+
+            </div>
+
+          </>
+
+        )}
+
+        {/* ================= Analysis ================= */}
+
+        {missionState === "analysis" && (
+
+          <AIAnalysisPanel
+            onComplete={() =>
+              setMissionState("strategy")
+            }
           />
 
-        ) : (
+        )}
 
-          <div className="space-y-1">
+        {/* ================= Strategy ================= */}
 
-            <InfoRow
-              label="Project"
-              value={project.name ?? "Untitled Project"}
-            />
+        {missionState === "strategy" && (
 
-            <InfoRow
-              label="Area"
-              value={`${project.area ?? "--"} ha`}
-            />
+          <AIStrategyPanel
+            onApprove={() => {
+              setMissionState("visualization");
+              setVisualizationMode("future");
+            }}
+          />
 
-            <StatusRow
-              label="Verification"
-              status={project.verification ?? "Satellite"}
-            />
+        )}
 
-            <StatusRow
-              label="Stage"
-              status={project.stage ?? "Planning"}
-            />
+        {/* ================= Visualization ================= */}
 
-            <InfoRow
-              label="Ecosystem"
-              value={project.assessment.ecosystem}
-            />
+        {missionState === "visualization" && (
 
-            <InfoRow
-              label="Restoration Potential"
-              value={project.assessment.restorationPotential}
-            />
+          <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
 
-            <InfoRow
-              label="Risk"
-              value={project.assessment.risk}
-            />
+            <p className="text-sm font-semibold text-emerald-700">
+              🌱 Applying Restoration Plan
+            </p>
+
+            <p className="mt-3 text-sm text-gray-600">
+              The Digital Twin is now visualizing your future restored landscape.
+            </p>
 
           </div>
 

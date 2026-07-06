@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import {
   MapContainer,
   ScaleControl,
@@ -21,8 +20,9 @@ import MapNavigation from "./navigation/MapNavigation";
 
 import WorkspaceToolbar from "./toolbars/WorkspaceToolbar";
 import WorkspaceTopBar from "../layout/WorkspaceTopBar";
-
 import ProjectInformationPanel from "./panels/ProjectInformationPanel";
+
+import ThreeDViewer from "./threeD/ThreeDViewer";
 
 type ProjectMapProps = {
   project: any;
@@ -72,80 +72,155 @@ export default function ProjectMap({
   const [activeTool, setActiveTool] =
     useState("Project Boundary");
 
-  console.log("Workspace polygon:", polygon);
+  const [viewMode, setViewMode] =
+    useState<
+      "map" | "3d" | "insights" | "timeline"
+    >("map");
+
+  const [missionState, setMissionState] =
+    useState<
+      | "passport"
+      | "analysis"
+      | "strategy"
+      | "visualization"
+      | "execution"
+      | "monitoring"
+    >("passport");
+
+  const [visualizationMode, setVisualizationMode] =
+    useState<"current" | "future">("current");
 
   return (
     <div className="relative h-screen w-screen overflow-hidden">
 
-      {/* ================================
-          MAP CANVAS
-      ================================= */}
+      {/* ==========================================================
+          CENTER WORKSPACE
+      ========================================================== */}
 
-      <MapContainer
-        zoomControl={false}
-        style={{
-          width: "100%",
-          height: "100%",
-        }}
-        center={[-8.84, -74.95]}
-        zoom={15}
-        minZoom={3}
-        maxZoom={17}
-        scrollWheelZoom
-      >
-        <MapNavigation />
+      {viewMode === "map" && (
+        <MapContainer
+          zoomControl={false}
+          center={[-8.84, -74.95]}
+          zoom={15}
+          minZoom={3}
+          maxZoom={17}
+          scrollWheelZoom
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
+        >
+          <MapNavigation />
 
-        <BaseImagery />
+          <BaseImagery />
 
-        {polygon && (
-          <FitProject polygon={polygon} />
-        )}
+          {polygon && (
+            <FitProject polygon={polygon} />
+          )}
 
-        {polygon && (
-          <ProjectBoundary
+          {polygon && (
+            <ProjectBoundary
+              polygon={polygon}
+              visible={visibleLayers.boundary}
+            />
+          )}
+
+          <ScaleControl position="bottomleft" />
+
+          <TreesLayer
+            visible={visibleLayers.trees}
             polygon={polygon}
-            visible={visibleLayers.boundary}
           />
-        )}
 
-        <ScaleControl position="bottomleft" />
+          <DroneLayer
+            visible={visibleLayers.drone}
+            polygon={polygon}
+          />
 
-        <TreesLayer
-          visible={visibleLayers.trees}
-          polygon={polygon}
+          <DEMLayer
+            visible={visibleLayers.dem}
+            polygon={polygon}
+          />
+
+          <VegetationLayer
+            visible={visibleLayers.vegetation}
+            polygon={polygon}
+          />
+
+          <NDVILayer
+            visible={visibleLayers.ndvi}
+            polygon={polygon}
+          />
+
+          <AILayer
+            visible={visibleLayers.ai}
+            polygon={polygon}
+          />
+        </MapContainer>
+      )}
+
+      {/* ==========================================================
+          3D DIGITAL TWIN
+      ========================================================== */}
+
+      {viewMode === "3d" && (
+        <ThreeDViewer
+          visualizationMode={visualizationMode}
         />
+      )}
 
-        <DroneLayer
-          visible={visibleLayers.drone}
-          polygon={polygon}
-        />
+      {/* ==========================================================
+          AI INSIGHTS
+      ========================================================== */}
 
-        <DEMLayer
-          visible={visibleLayers.dem}
-          polygon={polygon}
-        />
+      {viewMode === "insights" && (
+        <div className="flex h-full w-full items-center justify-center bg-[#0B0F14]">
 
-        <VegetationLayer
-          visible={visibleLayers.vegetation}
-          polygon={polygon}
-        />
+          <div className="text-center">
 
-        <NDVILayer
-          visible={visibleLayers.ndvi}
-          polygon={polygon}
-        />
+            <h1 className="text-5xl font-bold text-white">
+              📊 AI Insights
+            </h1>
 
-        <AILayer
-          visible={visibleLayers.ai}
-          polygon={polygon}
-        />
-      </MapContainer>
+            <p className="mt-5 text-lg text-white/60">
+              AI Restoration Intelligence coming online...
+            </p>
 
-      {/* ================================
+          </div>
+
+        </div>
+      )}
+
+      {/* ==========================================================
+          TIMELINE
+      ========================================================== */}
+
+      {viewMode === "timeline" && (
+        <div className="flex h-full w-full items-center justify-center bg-[#0B0F14]">
+
+          <div className="text-center">
+
+            <h1 className="text-5xl font-bold text-white">
+              🕒 Restoration Timeline
+            </h1>
+
+            <p className="mt-5 text-lg text-white/60">
+              Historical restoration timeline coming soon...
+            </p>
+
+          </div>
+
+        </div>
+      )}
+
+      {/* ==========================================================
           APPLICATION SHELL
-      ================================= */}
+      ========================================================== */}
 
-      <WorkspaceTopBar />
+      <WorkspaceTopBar
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+      />
 
       <WorkspaceToolbar
         activeTool={activeTool}
@@ -158,6 +233,10 @@ export default function ProjectMap({
         <ProjectInformationPanel
           project={project}
           activeTool={activeTool}
+          missionState={missionState}
+          setMissionState={setMissionState}
+          visualizationMode={visualizationMode}
+          setVisualizationMode={setVisualizationMode}
         />
       </div>
 

@@ -1,4 +1,15 @@
-export default function WorkspaceTopBar() {
+type Props = {
+  viewMode: "map" | "3d" | "insights" | "timeline";
+  setViewMode: (
+    mode: "map" | "3d" | "insights" | "timeline"
+  ) => void;
+};
+
+export default function WorkspaceTopBar({
+  viewMode,
+  setViewMode,
+}: Props) {
+
   return (
     <div className="absolute left-0 right-0 top-0 z-[1200] px-6">
 
@@ -54,27 +65,51 @@ export default function WorkspaceTopBar() {
         {/* Center Navigation                                */}
         {/* ------------------------------------------------ */}
 
-        <div className="rounded-full bg-black/20 p-1 backdrop-blur-xl">
+        <div className="flex items-center rounded-full bg-black/35 p-1">
 
-          <div className="flex items-center">
+          <button
+            onClick={() => setViewMode("map")}
+            className={`rounded-full px-7 py-3 text-sm font-medium transition ${
+              viewMode === "map"
+                ? "bg-emerald-500 text-white"
+                : "text-white/70 hover:text-white"
+            }`}
+          >
+            Map
+          </button>
 
-            <button className="rounded-full px-6 py-2 text-sm font-medium text-white/70 transition-all hover:bg-white/10 hover:text-white">
-              Map
-            </button>
+          <button
+            onClick={() => setViewMode("3d")}
+            className={`rounded-full px-7 py-3 text-sm font-medium transition ${
+              viewMode === "3d"
+                ? "bg-emerald-500 text-white"
+                : "text-white/70 hover:text-white"
+            }`}
+          >
+            3D
+          </button>
 
-            <button className="rounded-full bg-emerald-500 px-6 py-2 text-sm font-semibold text-white shadow-lg transition-all">
-              3D View
-            </button>
+          <button
+            onClick={() => setViewMode("insights")}
+            className={`rounded-full px-7 py-3 text-sm font-medium transition ${
+              viewMode === "insights"
+                ? "bg-emerald-500 text-white"
+                : "text-white/70 hover:text-white"
+            }`}
+          >
+            Insights
+          </button>
 
-            <button className="rounded-full px-6 py-2 text-sm font-medium text-white/70 transition-all hover:bg-white/10 hover:text-white">
-              Insights
-            </button>
-
-            <button className="rounded-full px-6 py-2 text-sm font-medium text-white/70 transition-all hover:bg-white/10 hover:text-white">
-              Timeline
-            </button>
-
-          </div>
+          <button
+            onClick={() => setViewMode("timeline")}
+            className={`rounded-full px-7 py-3 text-sm font-medium transition ${
+              viewMode === "timeline"
+                ? "bg-emerald-500 text-white"
+                : "text-white/70 hover:text-white"
+            }`}
+          >
+            Timeline
+          </button>
 
         </div>
 
