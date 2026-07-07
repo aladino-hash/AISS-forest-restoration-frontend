@@ -85,8 +85,8 @@ public/tiles/
 
 # Large media
 public/video/FranciscoVideo.mp4
-# Local AI / ML models
-models/
+# Local AI / ML models (root folder only)
+/models/
 # Jupyter notebooks
 *.ipynb
 
