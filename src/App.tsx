@@ -28,7 +28,7 @@ const queryClient = new QueryClient();
 /* true in localhost, false in production */
 /* ===================================================== */
 
-const experimentalEnabled = import.meta.env.DEV;
+const experimentalEnabled = true;
 
 const App = () => (
   <QueryClientProvider client={queryClient}>

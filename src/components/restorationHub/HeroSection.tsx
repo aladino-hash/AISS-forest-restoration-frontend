@@ -1,4 +1,7 @@
+import { useNavigate } from "react-router-dom";
+
 export default function HeroSection() {
+const navigate = useNavigate();
   return (
     <section
       className="
@@ -41,6 +44,7 @@ export default function HeroSection() {
           <div className="mt-6 flex items-center gap-4">
 
             <button
+              onClick={() => navigate("/scenario")}
               className="
                 flex
                 h-14

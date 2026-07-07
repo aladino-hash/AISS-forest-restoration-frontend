@@ -163,76 +163,68 @@ export default function IntroHero() {
           /* DEV ONLY — Live Satellite (hidden in production) */
           /* ===================================================== */}
 
-          {import.meta.env.DEV && (
-
-            <button
-              onClick={() => navigate('/curimana')}
-              style={{
-                backgroundColor: "transparent",
-                color: "white",
-                border: "1px solid rgba(255,255,255,0.6)",
-                padding: "14px 28px",
-                fontSize: "0.85rem",
-                fontWeight: 700,
-                cursor: "pointer",
-                letterSpacing: "2px",
-                textTransform: "uppercase",
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                backdropFilter: "blur(6px)"
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)";
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-              }}
-            >
-              Live Satellite
-              <Map size={18} />
-            </button>
-
-          )}
+          <button
+            onClick={() => navigate('/curimana')}
+            style={{
+              backgroundColor: "transparent",
+              color: "white",
+              border: "1px solid rgba(255,255,255,0.6)",
+              padding: "14px 28px",
+              fontSize: "0.85rem",
+              fontWeight: 700,
+              cursor: "pointer",
+              letterSpacing: "2px",
+              textTransform: "uppercase",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              backdropFilter: "blur(6px)"
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+            }}
+          >
+            Live Satellite
+            <Map size={18} />
+          </button>
 
           {/* ===================================================== */
           /* DEV ONLY — Restoration Intelligence */
           /* hidden in production */
           /* ===================================================== */}
 
-          {import.meta.env.DEV && (
-
-            <button
-              onClick={() => navigate('/restoration-hub')}
-              style={{
-                backgroundColor: "transparent",
-                color: "#10b981",
-                border: "1px solid #10b981",
-                padding: "14px 28px",
-                fontSize: "0.85rem",
-                fontWeight: 700,
-                cursor: "pointer",
-                letterSpacing: "2px",
-                textTransform: "uppercase",
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                backdropFilter: "blur(6px)"
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.backgroundColor = "#10b981";
-                e.currentTarget.style.color = "white";
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.color = "#10b981";
-              }}
-            >
-              Restoration Hub
-              <BarChart3 size={18} />
-            </button>
-
-          )}
+          <button
+            onClick={() => navigate('/restoration-hub')}
+            style={{
+              backgroundColor: "transparent",
+              color: "#10b981",
+              border: "1px solid #10b981",
+              padding: "14px 28px",
+              fontSize: "0.85rem",
+              fontWeight: 700,
+              cursor: "pointer",
+              letterSpacing: "2px",
+              textTransform: "uppercase",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              backdropFilter: "blur(6px)"
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = "#10b981";
+              e.currentTarget.style.color = "white";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = "#10b981";
+            }}
+          >
+            Restoration Intelligence
+            <BarChart3 size={18} />
+          </button>
 
         </div>
       </div>
