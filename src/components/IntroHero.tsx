@@ -203,7 +203,7 @@ export default function IntroHero() {
           {import.meta.env.DEV && (
 
             <button
-              onClick={() => navigate('/restoration')}
+              onClick={() => navigate('/restoration-hub')}
               style={{
                 backgroundColor: "transparent",
                 color: "#10b981",
@@ -228,7 +228,7 @@ export default function IntroHero() {
                 e.currentTarget.style.color = "#10b981";
               }}
             >
-              Restoration Intelligence
+              Restoration Hub
               <BarChart3 size={18} />
             </button>
 

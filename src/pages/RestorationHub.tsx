@@ -1,37 +1,27 @@
-import { useLocation } from "react-router-dom";
+import HeroSection from "../components/restorationHub/HeroSection";
+import MissionGrid from "../components/restorationHub/MissionGrid";
+import ProviderCategories from "../components/restorationHub/ProviderCategories";
+import HomeShowcase from "../components/restorationHub/HomeShowcase";
+import AITools from "../components/restorationHub/AITools";
+import HubHeader from "../components/restorationHub/HubHeader";
+import Footer from "../components/restorationHub/Footer";
 
 export default function RestorationHub() {
-  const location = useLocation();
-  const project = location.state?.project;
-
   return (
-    <div className="p-6">
+    <div className="min-h-screen bg-slate-50">
 
-      <h1 className="text-2xl font-bold mb-4">
-        🌱 Restoration Hub
-      </h1>
+      <HubHeader />
 
-      {!project && (
-        <div className="text-gray-500">
-          No project selected yet.
-        </div>
-      )}
+      <main className="space-y-10 px-6 pb-10">
 
-      {project && (
-        <div className="bg-white rounded-xl shadow-md p-5">
+        <HeroSection />
+        <MissionGrid />
+        <HomeShowcase />
+        <ProviderCategories />
+        <AITools />
+        <Footer />
 
-          <h2 className="text-lg font-semibold mb-2">
-            {project.name}
-          </h2>
-
-          <div className="text-sm text-gray-600 space-y-1">
-            <div><b>Status:</b> {project.status}</div>
-            <div><b>Ecosystem:</b> {project.ecosystem}</div>
-            <div><b>NDVI:</b> {project.ndvi?.toFixed(2)}</div>
-          </div>
-
-        </div>
-      )}
+      </main>
 
     </div>
   );
