@@ -1,4 +1,3 @@
-import StakeholderSelector from "@/components/StakeholderSelector";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -119,8 +118,6 @@ export default function ScenarioSimulator() {
           </div>
 
         </div>
-
-        <StakeholderSelector />
 
         <ScenarioControlPanel
           scenario={scenario}

@@ -18,12 +18,17 @@ import { useTranslation } from "react-i18next"; // ✅ NEW
    NAV ITEMS
 ========================= */
 const navItems = [
-  { path: '/', label: 'Global Overview', icon: BarChart3 },
+  { path: '/', label: 'Explore Dashboard', icon: BarChart3 },
   { path: '/map', label: 'World Map', icon: Globe },
   { path: '/country', label: 'Country View', icon: TreePine },
 
   // 🔥 MAIN PRODUCT FEATURE
-  { path: '/restoration', label: 'Restoration Hub', icon: Leaf, highlight: true },
+  {
+    path: "/restoration-hub",
+    label: "Restoration Hub",
+    icon: Leaf,
+    highlight: true,
+  },
 
   { path: '/predictions', label: 'Predictions', icon: TrendingUp },
   { path: '/recommendations', label: 'AI Recommendations', icon: Brain },

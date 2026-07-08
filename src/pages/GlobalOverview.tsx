@@ -314,7 +314,7 @@ const { data: summary, isLoading: summaryLoading } = useSummary();
         <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-              Global Forest Overview
+              Explore Dashboard
             </h1>
             {/* 🎓 RESEARCH PLATFORM BADGE */}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50/60 border border-emerald-100 text-emerald-700 text-xs font-medium mb-4">
@@ -329,7 +329,7 @@ const { data: summary, isLoading: summaryLoading } = useSummary();
 
             </div>
             <p className="text-muted-foreground text-lg">
-              Worldwide tree cover loss trends and deforestation statistics
+              Explore global forest intelligence, monitor ecosystem change, and identify restoration opportunities.
             </p>
           </div>
           <button

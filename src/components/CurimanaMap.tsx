@@ -1,3 +1,4 @@
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { API_BASE_URL } from "@/lib/api";
 import { useEffect, useState } from "react";
 import {
@@ -61,7 +62,11 @@ const MapController = ({ userLocation }: any) => {
 /* =========================
    DRAW CONTROL
 ========================= */
-const DrawControl = ({ setPolygon }: any) => {
+const DrawControl = ({
+  setPolygon,
+  setAssistantMessage,
+}: any) => {
+
   const map = useMapEvents({});
 
   useEffect(() => {
@@ -69,18 +74,18 @@ const DrawControl = ({ setPolygon }: any) => {
     map.addLayer(drawnItems);
 
     const drawControl = new L.Control.Draw({
-      draw: {
-        polygon: true,
-        rectangle: false,
-        circle: false,
-        marker: false,
-        polyline: false,
-        circlemarker: false,
-      },
-      edit: {
-        featureGroup: drawnItems,
-      },
-    });
+  draw: {
+    polygon: true,
+    rectangle: false,
+    circle: false,
+    marker: false,
+    polyline: false,
+    circlemarker: false,
+  },
+  edit: {
+    featureGroup: drawnItems,
+  },
+});
 
     map.addControl(drawControl);
 
@@ -92,6 +97,9 @@ const DrawControl = ({ setPolygon }: any) => {
 
       const geojson = layer.toGeoJSON();
       setPolygon(geojson);
+      setAssistantMessage(
+        "Great! I've detected your restoration area. I'm ready to analyze the vegetation whenever you are."
+      );
 
       console.log("Polygon drawn:", geojson);
     };
@@ -120,6 +128,11 @@ const CurimanaMap = ({
   initialLocation,
   readOnly = false,
 }: CurimanaMapProps) => {
+
+const [projectPanelOpen, setProjectPanelOpen] = useState(true);
+const [assistantMessage, setAssistantMessage] = useState(
+  "Welcome to FYNOS AI. Search for a property or draw a polygon to begin."
+);
 
   const navigate = useNavigate();
 
@@ -233,6 +246,73 @@ const CurimanaMap = ({
   return (
     <div className="relative h-screen w-full overflow-hidden">
 
+    {/* =========================
+        PROJECT INFORMATION
+    ========================= */}
+
+    <div className="absolute top-52 left-4 z-[1000] flex">
+
+      {!projectPanelOpen && (
+        <button
+          onClick={() => setProjectPanelOpen(true)}
+          className="bg-white shadow-xl rounded-r-xl px-2 py-6 hover:bg-gray-100 transition"
+        >
+          <ChevronRight size={20} />
+        </button>
+      )}
+
+      {projectPanelOpen && (
+        <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl p-5 w-[290px] relative">
+
+          <button
+            onClick={() => setProjectPanelOpen(false)}
+            className="absolute top-3 right-3 rounded-md p-1 hover:bg-gray-100 transition"
+          >
+            <ChevronLeft size={18} />
+          </button>
+
+        <div className="text-xs uppercase tracking-wider text-green-600 font-semibold">
+          Restoration Workspace
+        </div>
+
+        <h2 className="text-xl font-bold mt-1">
+          Curimaná Pilot
+        </h2>
+
+        <p className="text-sm text-gray-500">
+          Ucayali, Peru
+        </p>
+
+        <div className="mt-5 space-y-3 text-sm">
+
+          <div className="flex justify-between">
+            <span className="text-gray-500">Project</span>
+            <span className="font-medium">Pilot #001</span>
+          </div>
+
+          <div className="flex justify-between">
+            <span className="text-gray-500">Status</span>
+            <span className="text-green-600 font-semibold">
+              ● Ready for Analysis
+            </span>
+          </div>
+
+          <div className="flex justify-between">
+            <span className="text-gray-500">Imagery</span>
+            <span>Sentinel-2 NDVI</span>
+          </div>
+
+          <div className="flex justify-between">
+            <span className="text-gray-500">Area</span>
+            <span>Waiting for polygon</span>
+          </div>
+
+        </div>
+
+      </div>
+        )}
+    </div>
+
       {/* SEARCH */}
       <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] w-[90%] max-w-[360px]">
         <div className="flex bg-white/80 backdrop-blur-md rounded-full shadow-md overflow-hidden">
@@ -276,7 +356,10 @@ const CurimanaMap = ({
         <MapClickHandler setClickedPoint={setClickedPoint} />
 
         {!readOnly && (
-          <DrawControl setPolygon={setPolygon} />
+          <DrawControl
+            setPolygon={setPolygon}
+            setAssistantMessage={setAssistantMessage}
+          />
         )}
 
         {!readOnly && clickedPoint?.lat && clickedPoint?.lon && (
@@ -295,92 +378,180 @@ const CurimanaMap = ({
       {/* INSTRUCTION */}
       {!readOnly && !clickedPoint && !polygon && (
         <div className="absolute top-[70px] left-1/2 -translate-x-1/2 z-[1000] bg-white/70 px-4 py-2 rounded-full text-sm shadow-md">
-          👉 Click or draw a polygon
+          <div className="flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse" />
+
+            <span className="font-medium">
+              🤖 Ready
+            </span>
+
+            <span className="text-gray-500">
+              • Click or draw a polygon
+            </span>
+          </div>
         </div>
       )}
 
       {/* POLYGON STATUS */}
       {!readOnly && polygon && !polygonAnalysis && (
         <div className="absolute top-[70px] left-1/2 -translate-x-1/2 z-[1000] bg-green-600 text-white px-4 py-2 rounded-full text-sm shadow-md">
-          ✅ Area selected — analyzing...
+          <div className="flex items-center gap-2">
+            <div className="h-2.5 w-2.5 rounded-full bg-white animate-pulse" />
+
+            <span className="font-semibold">
+              🤖 FYNOS AI
+            </span>
+
+            <span>
+              Polygon detected — analyzing...
+            </span>
+          </div>
         </div>
       )}
 
-      {/* ANALYSIS PANEL */}
-      {!readOnly && polygonAnalysis && (
+      {/* RESTORATION ASSISTANT */}
+      {!readOnly && (
         <div
           className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000]
           bg-white/95 px-5 py-4 rounded-2xl shadow-2xl text-sm w-[320px]"
         >
           <div className="font-bold text-lg mb-3">
-            🌱 AI Land Intelligence
+            🤖 Restoration Assistant
           </div>
 
-          <div className="space-y-2">
+          {!polygonAnalysis ? (
 
-            <div>
-              <strong>NDVI:</strong>{" "}
-              {polygonAnalysis.ndvi?.toFixed(2)}
+            <div className="space-y-4">
+
+              <div className="rounded-xl bg-gray-50 p-4 border">
+                <p className="text-sm leading-relaxed text-gray-700">
+                  {assistantMessage}
+                </p>
+              </div>
             </div>
 
-            <div>
-              <strong>Status:</strong>{" "}
-              {polygonAnalysis.status || "Moderately degraded"}
-            </div>
+          ) : (
+
+          <div className="space-y-5">
+
+            {/* ================================= */}
+            {/* VEGETATION */}
+            {/* ================================= */}
 
             <div>
-              <strong>Ecosystem:</strong>{" "}
-              {polygonAnalysis.ecosystem_type || "Unknown"}
+
+              <h3 className="mb-2 font-semibold text-green-700">
+                🌿 Vegetation
+              </h3>
+
+              <div className="space-y-1 text-sm">
+
+                <div className="flex justify-between">
+                  <span>NDVI</span>
+                  <strong>{polygonAnalysis.ndvi?.toFixed(2)}</strong>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Status</span>
+                  <strong>{polygonAnalysis.status || "Moderately degraded"}</strong>
+                </div>
+
+              </div>
+
             </div>
 
-            <div>
-              <strong>Carbon Estimate:</strong>{" "}
-              {polygonAnalysis.carbon_estimate_tons_per_ha?.toFixed(1)} t/ha
-            </div>
+            {/* ================================= */}
+            {/* ENVIRONMENT */}
+            {/* ================================= */}
 
             <div>
-              <strong>Biodiversity:</strong>{" "}
-              {polygonAnalysis.biodiversity_score}/100
+
+              <h3 className="mb-2 font-semibold text-blue-700">
+                🌍 Environment
+              </h3>
+
+              <div className="space-y-1 text-sm">
+
+                <div className="flex justify-between">
+                  <span>Ecosystem</span>
+                  <strong>{polygonAnalysis.ecosystem_type || "Unknown"}</strong>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Moisture</span>
+                  <strong>{polygonAnalysis.moisture}</strong>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Soil</span>
+                  <strong>{polygonAnalysis.soil}</strong>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Elevation</span>
+                  <strong>{Math.round(polygonAnalysis.elevation || 0)} m</strong>
+                </div>
+
+              </div>
+
             </div>
 
-            <div>
-              <strong>Moisture:</strong>{" "}
-              {polygonAnalysis.moisture}
-            </div>
+            {/* ================================= */}
+            {/* RESTORATION */}
+            {/* ================================= */}
 
             <div>
-              <strong>Soil:</strong>{" "}
-              {polygonAnalysis.soil}
+
+              <h3 className="mb-2 font-semibold text-emerald-700">
+                🌱 Restoration
+              </h3>
+
+              <div className="space-y-1 text-sm">
+
+                <div className="flex justify-between">
+                  <span>Risk</span>
+                  <strong>{polygonAnalysis.risk}</strong>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Carbon</span>
+                  <strong>
+                    {polygonAnalysis.carbon_estimate_tons_per_ha?.toFixed(1)} t/ha
+                  </strong>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Biodiversity</span>
+                  <strong>{polygonAnalysis.biodiversity_score}/100</strong>
+                </div>
+
+              </div>
+
             </div>
 
-            <div>
-              <strong>Risk:</strong>{" "}
-              {polygonAnalysis.risk}
+            <div className="mt-4 pt-3 border-t text-xs text-gray-500">
+              AI-generated environmental interpretation from Sentinel-2 imagery
             </div>
 
-            <div>
-              <strong>Elevation:</strong>{" "}
-              {Math.round(polygonAnalysis.elevation || 0)} m
-            </div>
           </div>
+          )}
 
-          <div className="mt-4 pt-3 border-t text-xs text-gray-500">
-            AI-generated environmental interpretation from Sentinel-2 imagery
-          </div>
-          <button
-            onClick={() =>
-              navigate("/restoration-brief", {
-                state: {
-                  polygon,
-                  polygonAnalysis,
-                },
-              })
-            }
-            className="mt-4 w-full bg-green-600 hover:bg-green-700
-            text-white py-2 px-4 rounded-xl font-semibold transition-all"
-          >
-            🌿 Generate Agroforestry Plan
-          </button>
+          {polygonAnalysis && (
+            <button
+              onClick={() =>
+                navigate("/restoration-brief", {
+                  state: {
+                    polygon,
+                    polygonAnalysis,
+                  },
+                })
+              }
+              className="mt-4 w-full bg-green-600 hover:bg-green-700
+              text-white py-2 px-4 rounded-xl font-semibold transition-all"
+            >
+              🌱 Generate restoration strategy
+            </button>
+          )}
         </div>
       )}
 

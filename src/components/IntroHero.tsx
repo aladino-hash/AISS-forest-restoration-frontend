@@ -15,45 +15,77 @@ export default function IntroHero() {
     <div style={{ position: "relative", width: "100%", height: "100vh", overflow: "hidden", backgroundColor: "#020c02" }}>
 
       {/* Header */}
-      <nav style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        width: "100%",
-        padding: "45px 60px",
-        display: "flex",
-        alignItems: "center",
-        zIndex: 100,
-        background: "linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, transparent 100%)"
-      }}>
+      {/* Header */}
+      <nav
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          padding: "45px 60px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          zIndex: 100,
+          background:
+            "linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, transparent 100%)",
+        }}
+      >
+        {/* Left side (Logo) */}
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
 
-          {/* ✅ BIGGER LOGO */}
           <img
             src="/images/logo.png"
             alt="Fynos AI Logo"
             style={{
-              height: "64px",   // 🔥 bigger
+              height: "64px",
               width: "auto",
-              display: "block"
+              display: "block",
             }}
           />
 
-          {/* ✅ TEXT (KEPT + STYLED) */}
-          <span style={{
-            color: "white",
-            fontWeight: 700,
-            letterSpacing: "2px",
-            fontSize: "1.4rem",
-            fontFamily: "Inter, sans-serif",
-            display: "flex",
-            alignItems: "center",
-            gap: "6px"
-          }}>
+          <span
+            style={{
+              color: "white",
+              fontWeight: 700,
+              letterSpacing: "2px",
+              fontSize: "1.4rem",
+              fontFamily: "Inter, sans-serif",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
             FYNOS <span style={{ color: "#10b981" }}>AI</span>
           </span>
 
         </div>
+
+        {/* Right side (Join button) */}
+        <button
+          onClick={() => navigate("/join")}
+          style={{
+            backgroundColor: "#10b981",
+            color: "white",
+            border: "none",
+            padding: "14px 28px",
+            borderRadius: "999px",
+            fontSize: "0.9rem",
+            fontWeight: 700,
+            cursor: "pointer",
+            letterSpacing: "0.5px",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.25)",
+            transition: "all .2s ease",
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = "#059669";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = "#10b981";
+          }}
+        >
+          🌱 Join the Mission
+        </button>
       </nav>
 
       {/* Overlay */}
@@ -197,7 +229,7 @@ export default function IntroHero() {
           /* ===================================================== */}
 
           <button
-            onClick={() => navigate('/restoration-hub')}
+            onClick={() => navigate("/restoration-hub")}
             style={{
               backgroundColor: "transparent",
               color: "#10b981",
@@ -222,7 +254,7 @@ export default function IntroHero() {
               e.currentTarget.style.color = "#10b981";
             }}
           >
-            Restoration Intelligence
+            Restoration Hub
             <BarChart3 size={18} />
           </button>
 

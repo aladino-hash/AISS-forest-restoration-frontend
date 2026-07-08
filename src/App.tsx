@@ -20,6 +20,7 @@ import UnderConstruction from "./pages/UnderConstruction";
 import RestorationBrief from "./pages/RestorationBrief";
 import RestorationWorkspace from "./pages/RestorationWorkspace";
 import RestorationHub from "./pages/RestorationHub";
+import RestorationOnboarding from "@/pages/RestorationOnboarding";
 
 const queryClient = new QueryClient();
 
@@ -84,6 +85,11 @@ const App = () => (
           <Route
             path="/restoration-hub"
             element={<RestorationHub />}
+          />
+
+          <Route
+            path="/join"
+            element={<RestorationOnboarding />}
           />
 
           {/* Dashboard Pages */}
