@@ -38,7 +38,7 @@ export default function IntroHero() {
             src="/images/logo.png"
             alt="Fynos AI Logo"
             style={{
-              height: "64px",
+              height: window.innerWidth < 768 ? "46px" : "64px",
               width: "auto",
               display: "block",
             }}
@@ -68,14 +68,15 @@ export default function IntroHero() {
             backgroundColor: "#10b981",
             color: "white",
             border: "none",
-            padding: "14px 28px",
             borderRadius: "999px",
-            fontSize: "0.9rem",
-            fontWeight: 700,
             cursor: "pointer",
-            letterSpacing: "0.5px",
-            boxShadow: "0 10px 30px rgba(0,0,0,0.25)",
-            transition: "all .2s ease",
+            fontWeight: 700,
+
+            padding: window.innerWidth < 768 ? "10px 18px" : "14px 26px",
+
+            fontSize: window.innerWidth < 768 ? "0.9rem" : "1rem",
+
+            whiteSpace: "nowrap",
           }}
           onMouseOver={(e) => {
             e.currentTarget.style.backgroundColor = "#059669";
@@ -84,7 +85,7 @@ export default function IntroHero() {
             e.currentTarget.style.backgroundColor = "#10b981";
           }}
         >
-          🌱 Join the Mission
+          {window.innerWidth < 768 ? "🌱 Join" : "🌱 Join the Mission"}
         </button>
       </nav>
 
@@ -113,16 +114,19 @@ export default function IntroHero() {
       />
 
       {/* HERO CONTENT */}
-      <div style={{
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        textAlign: "center",
-        width: "100%",
-        padding: "0 20px",
-        zIndex: 10
-      }}>
+      <div
+        style={{
+          position: "absolute",
+          top: window.innerWidth < 768 ? "52%" : "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          textAlign: "center",
+          width: "100%",
+          maxWidth: "700px",
+          padding: window.innerWidth < 768 ? "0 24px" : "0 20px",
+          zIndex: 10,
+        }}
+      >
 
         {/* TITLE */}
         <h1 style={{
@@ -152,13 +156,18 @@ export default function IntroHero() {
         </p>
 
         {/* BUTTONS */}
-        <div style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: "15px"
-        }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: window.innerWidth < 768 ? "14px" : "15px",
+            width: "100%",
+            maxWidth: window.innerWidth < 768 ? "360px" : "420px",
+            margin: "0 auto",
+          }}
+        >
 
           {/* Dashboard */}
           <button
@@ -167,8 +176,8 @@ export default function IntroHero() {
               backgroundColor: "white",
               color: "black",
               border: "none",
-              padding: "14px 28px",
-              fontSize: "0.85rem",
+              padding: window.innerWidth < 768 ? "18px 24px" : "14px 28px",
+              fontSize: window.innerWidth < 768 ? "1rem" : "0.85rem",
               fontWeight: 800,
               cursor: "pointer",
               letterSpacing: "2px",
@@ -176,7 +185,9 @@ export default function IntroHero() {
               display: "flex",
               alignItems: "center",
               gap: "10px",
-              boxShadow: "0 10px 30px rgba(0,0,0,0.4)"
+              boxShadow: "0 10px 30px rgba(0,0,0,0.4)",
+              width: "100%",
+              justifyContent: "center",
             }}
             onMouseOver={(e) => {
               e.currentTarget.style.backgroundColor = accentColor;
@@ -210,7 +221,11 @@ export default function IntroHero() {
               display: "flex",
               alignItems: "center",
               gap: "10px",
-              backdropFilter: "blur(6px)"
+              backdropFilter: "blur(6px)",
+              width: "100%",
+              justifyContent: "center",
+              padding: window.innerWidth < 768 ? "18px 24px" : "14px 28px",
+              fontSize: window.innerWidth < 768 ? "1rem" : "0.85rem",
             }}
             onMouseOver={(e) => {
               e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)";
@@ -243,7 +258,11 @@ export default function IntroHero() {
               display: "flex",
               alignItems: "center",
               gap: "10px",
-              backdropFilter: "blur(6px)"
+              backdropFilter: "blur(6px)",
+              width: "100%",
+              justifyContent: "center",
+              padding: window.innerWidth < 768 ? "18px 24px" : "14px 28px",
+              fontSize: window.innerWidth < 768 ? "1rem" : "0.85rem",
             }}
             onMouseOver={(e) => {
               e.currentTarget.style.backgroundColor = "#10b981";

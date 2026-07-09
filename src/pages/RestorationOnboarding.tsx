@@ -63,10 +63,19 @@ export default function RestorationOnboarding() {
             </div>
           </div>
 
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div
+            className={`mt-8 grid gap-6 ${
+              selectedMission
+                ? "grid-cols-1"
+                : "grid-cols-1 md:grid-cols-3"
+            }`}
+          >
+
+            {(!selectedMission || selectedMission === "intelligence") && (
 
             <div
               onClick={() => setSelectedMission("intelligence")}
+
               className={`rounded-2xl p-6 cursor-pointer transition-all ${
                 selectedMission === "intelligence"
                   ? "border-2 border-emerald-600 bg-emerald-50 shadow-lg"
@@ -83,6 +92,9 @@ export default function RestorationOnboarding() {
                 {t("onboarding.missions.intelligence.description")}
               </p>
             </div>
+            )}
+
+            {(!selectedMission || selectedMission === "restore_land") && (
 
             <div
               onClick={() => setSelectedMission("restore_land")}
@@ -103,9 +115,13 @@ export default function RestorationOnboarding() {
                 and connect with restoration experts through WhatsApp.
               </p>
             </div>
+            )}
+
+            {(!selectedMission || selectedMission === "provide_services") && (
 
             <div
               onClick={() => setSelectedMission("provide_services")}
+
               className={`rounded-2xl p-6 cursor-pointer transition-all ${
                 selectedMission === "provide_services"
                   ? "border-2 border-emerald-600 bg-emerald-50 shadow-lg"
@@ -123,8 +139,31 @@ export default function RestorationOnboarding() {
                 and help bring restoration plans to life.
               </p>
             </div>
+            )}
 
           </div>
+
+          {selectedMission && (
+            <button
+              onClick={() => {
+                setSelectedMission(null);
+                setRestoreStarted(false);
+              }}
+              className="
+                mb-6
+                flex
+                items-center
+                gap-2
+                text-sm
+                font-medium
+                text-emerald-700
+                hover:text-emerald-900
+                transition-colors
+              "
+            >
+              ← Choose another mission
+            </button>
+          )}
 
           {selectedMission === "restore_land" && (
             <div className="mt-8 rounded-2xl border border-emerald-100 bg-emerald-50 p-6">

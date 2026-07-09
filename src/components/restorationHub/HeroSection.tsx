@@ -7,12 +7,15 @@ const navigate = useNavigate();
       className="
         relative
         overflow-hidden
-        rounded-[36px]
+        rounded-[28px]
+        md:rounded-[36px]
         bg-gradient-to-r
         from-emerald-900
         to-emerald-700
-        px-14
+        px-5
         py-8
+        md:px-14
+        md:py-8
         text-white
       "
     >
@@ -31,24 +34,45 @@ const navigate = useNavigate();
 
         <div>
 
-          <h1 className="text-5xl font-bold leading-tight">
+          <h1 className="
+              text-3xl
+              md:text-5xl
+              font-bold
+              leading-tight
+              "
+              >
             Restoration Hub
           </h1>
 
-          <p className="mt-4 max-w-xl text-lg leading-7 text-emerald-50">
-            Learn restoration, discover successful projects,
-            connect with trusted providers, and use AI-powered
-            tools to restore ecosystems with confidence.
+          <p className="
+             mt-4
+             max-w-xl
+             text-base
+             md:text-lg
+             leading-7
+             text-emerald-50
+             "
+             >
+             {window.innerWidth < 768
+               ? "Plan, learn, connect, and restore forests with AI."
+               : "Learn restoration, discover successful projects, connect with trusted providers, and use AI-powered tools to restore ecosystems with confidence."}
           </p>
 
-          <div className="mt-6 flex items-center gap-4">
+          <div className="
+               mt-6
+               flex
+               flex-col
+               md:flex-row
+               gap-3
+               "
+               >
 
             <button
               onClick={() => navigate("/join")}
               className="
                 flex
                 h-14
-                w-56
+                w-full md:w-56
                 items-center
                 justify-center
                 rounded-2xl
@@ -67,7 +91,7 @@ const navigate = useNavigate();
               className="
                 flex
                 h-14
-                w-56
+                w-full md:w-56
                 items-center
                 justify-center
                 rounded-2xl
@@ -89,7 +113,7 @@ const navigate = useNavigate();
               className="
                 flex
                 h-14
-                w-56
+                w-full md:w-56
                 items-center
                 justify-center
                 rounded-2xl

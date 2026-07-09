@@ -1,19 +1,25 @@
+import { useNavigate } from "react-router-dom";
+
 export default function HubHeader() {
+
+  const navigate = useNavigate();
   return (
     <header
       className="
-      sticky
-      top-0
-      z-50
-      flex
-      h-20
-      items-center
-      justify-between
-      border-b
-      border-slate-200
-      bg-white
-      px-10
-    "
+        sticky
+        top-0
+        z-50
+        flex
+        h-16
+        md:h-20
+        items-center
+        justify-between
+        border-b
+        border-slate-200
+        bg-white
+        px-5
+        md:px-10
+      "
     >
       {/* Left */}
 
@@ -34,7 +40,7 @@ export default function HubHeader() {
 
         </div>
 
-        <nav className="flex items-center gap-10 text-base">
+        <nav className="hidden md:flex items-center gap-10 text-base">
 
           <button className="text-slate-600 hover:text-slate-900">
             Explore Dashboard
@@ -65,13 +71,24 @@ export default function HubHeader() {
 
       {/* Right */}
 
-      <div className="flex items-center gap-5 text-2xl">
+      <div className="flex items-center">
 
-        <button>🔔</button>
-
-        <button>❔</button>
-
-        <button>👤</button>
+        <button
+          onClick={() => navigate("/join")}
+          className="
+            rounded-full
+            bg-emerald-600
+            px-5
+            py-2
+            text-sm
+            font-semibold
+            text-white
+            transition
+            hover:bg-emerald-700
+          "
+        >
+          🌱 Join
+        </button>
 
       </div>
 

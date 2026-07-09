@@ -1,3 +1,4 @@
+import RestorationAssistant from "@/components/assistant/RestorationAssistant";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { API_BASE_URL } from "@/lib/api";
 import { useEffect, useState } from "react";
@@ -134,6 +135,8 @@ const [assistantMessage, setAssistantMessage] = useState(
   "Welcome to FYNOS AI. Search for a property or draw a polygon to begin."
 );
 
+const [assistantOpen, setAssistantOpen] = useState(true);
+
   const navigate = useNavigate();
 
   const [tileUrl, setTileUrl] = useState<string | null>(null);
@@ -262,7 +265,12 @@ const [assistantMessage, setAssistantMessage] = useState(
       )}
 
       {projectPanelOpen && (
-        <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl p-5 w-[290px] relative">
+        <div
+          className="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl p-5 relative"
+          style={{
+            width: window.innerWidth < 768 ? "240px" : "290px",
+          }}
+        >
 
           <button
             onClick={() => setProjectPanelOpen(false)}
@@ -410,153 +418,22 @@ const [assistantMessage, setAssistantMessage] = useState(
       )}
 
       {/* RESTORATION ASSISTANT */}
+
       {!readOnly && (
-        <div
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000]
-          bg-white/95 px-5 py-4 rounded-2xl shadow-2xl text-sm w-[320px]"
-        >
-          <div className="font-bold text-lg mb-3">
-            🤖 Restoration Assistant
-          </div>
-
-          {!polygonAnalysis ? (
-
-            <div className="space-y-4">
-
-              <div className="rounded-xl bg-gray-50 p-4 border">
-                <p className="text-sm leading-relaxed text-gray-700">
-                  {assistantMessage}
-                </p>
-              </div>
-            </div>
-
-          ) : (
-
-          <div className="space-y-5">
-
-            {/* ================================= */}
-            {/* VEGETATION */}
-            {/* ================================= */}
-
-            <div>
-
-              <h3 className="mb-2 font-semibold text-green-700">
-                🌿 Vegetation
-              </h3>
-
-              <div className="space-y-1 text-sm">
-
-                <div className="flex justify-between">
-                  <span>NDVI</span>
-                  <strong>{polygonAnalysis.ndvi?.toFixed(2)}</strong>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Status</span>
-                  <strong>{polygonAnalysis.status || "Moderately degraded"}</strong>
-                </div>
-
-              </div>
-
-            </div>
-
-            {/* ================================= */}
-            {/* ENVIRONMENT */}
-            {/* ================================= */}
-
-            <div>
-
-              <h3 className="mb-2 font-semibold text-blue-700">
-                🌍 Environment
-              </h3>
-
-              <div className="space-y-1 text-sm">
-
-                <div className="flex justify-between">
-                  <span>Ecosystem</span>
-                  <strong>{polygonAnalysis.ecosystem_type || "Unknown"}</strong>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Moisture</span>
-                  <strong>{polygonAnalysis.moisture}</strong>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Soil</span>
-                  <strong>{polygonAnalysis.soil}</strong>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Elevation</span>
-                  <strong>{Math.round(polygonAnalysis.elevation || 0)} m</strong>
-                </div>
-
-              </div>
-
-            </div>
-
-            {/* ================================= */}
-            {/* RESTORATION */}
-            {/* ================================= */}
-
-            <div>
-
-              <h3 className="mb-2 font-semibold text-emerald-700">
-                🌱 Restoration
-              </h3>
-
-              <div className="space-y-1 text-sm">
-
-                <div className="flex justify-between">
-                  <span>Risk</span>
-                  <strong>{polygonAnalysis.risk}</strong>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Carbon</span>
-                  <strong>
-                    {polygonAnalysis.carbon_estimate_tons_per_ha?.toFixed(1)} t/ha
-                  </strong>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Biodiversity</span>
-                  <strong>{polygonAnalysis.biodiversity_score}/100</strong>
-                </div>
-
-              </div>
-
-            </div>
-
-            <div className="mt-4 pt-3 border-t text-xs text-gray-500">
-              AI-generated environmental interpretation from Sentinel-2 imagery
-            </div>
-
-          </div>
-          )}
-
-          {polygonAnalysis && (
-            <button
-              onClick={() =>
-                navigate("/restoration-brief", {
-                  state: {
-                    polygon,
-                    polygonAnalysis,
-                  },
-                })
-              }
-              className="mt-4 w-full bg-green-600 hover:bg-green-700
-              text-white py-2 px-4 rounded-xl font-semibold transition-all"
-            >
-              🌱 Generate restoration strategy
-            </button>
-          )}
-        </div>
+        <RestorationAssistant
+            assistantMessage={assistantMessage}
+            polygon={polygon}
+            polygonAnalysis={polygonAnalysis}
+        />
       )}
 
       {/* LEGEND */}
-      <div className="absolute bottom-4 right-4 z-[1000] bg-white/80 p-3 rounded-lg shadow text-xs">
+      <div className={`
+           absolute z-[1000] bg-white/80 p-3 rounded-lg shadow text-xs
+           ${window.innerWidth < 768
+             ? "bottom-[270px] right-4"
+             : "bottom-4 right-4"}
+           `}>
         <div className="font-semibold mb-2">NDVI</div>
         <div className="flex gap-2"><div className="w-4 h-4 bg-red-500" />Low</div>
         <div className="flex gap-2"><div className="w-4 h-4 bg-yellow-400" />Moderate</div>
