@@ -85,7 +85,7 @@ export default function IntroHero() {
             e.currentTarget.style.backgroundColor = "#10b981";
           }}
         >
-          {window.innerWidth < 768 ? "🌱 Join" : "🌱 Join the Mission"}
+          {window.innerWidth < 768 ? "Join →" : "🌱 Join the Mission"}
         </button>
       </nav>
 
