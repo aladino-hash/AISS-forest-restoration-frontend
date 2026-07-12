@@ -21,6 +21,7 @@ import RestorationBrief from "./pages/RestorationBrief";
 import RestorationWorkspace from "./pages/RestorationWorkspace";
 import RestorationHub from "./pages/RestorationHub";
 import RestorationOnboarding from "@/pages/RestorationOnboarding";
+import RestorationIntelligenceWorkspace from "@/pages/RestorationIntelligenceWorkspace";
 
 const queryClient = new QueryClient();
 
@@ -90,6 +91,11 @@ const App = () => (
           <Route
             path="/join"
             element={<RestorationOnboarding />}
+          />
+
+          <Route
+            path="/workspace/intelligence"
+            element={<RestorationIntelligenceWorkspace />}
           />
 
           {/* Dashboard Pages */}
