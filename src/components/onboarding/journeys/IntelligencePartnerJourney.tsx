@@ -44,6 +44,8 @@ export default function IntelligencePartnerJourney() {
       />
 
       <StepContact
+        organizationType={organizationType}
+        focusArea={focusArea}
         geography={geography}
       />
 

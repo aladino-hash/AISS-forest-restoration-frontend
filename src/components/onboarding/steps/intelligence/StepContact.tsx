@@ -1,10 +1,19 @@
+import { useNavigate } from "react-router-dom";
+import { generateIntelligenceBlueprint } from "@/lib/blueprints/generateIntelligenceBlueprint";
+
 interface StepContactProps {
+  organizationType: string;
+  focusArea: string;
   geography: string;
 }
 
 export default function StepContact({
+  organizationType,
+  focusArea,
   geography,
 }: StepContactProps) {
+  const navigate = useNavigate();
+
   if (!geography) return null;
 
   return (
@@ -30,6 +39,19 @@ export default function StepContact({
       />
 
       <button
+        onClick={() => {
+          const blueprint = generateIntelligenceBlueprint({
+            organizationType,
+            focusArea,
+            geography,
+          });
+
+          navigate("/workspace/intelligence", {
+            state: {
+              blueprint,
+            },
+          });
+        }}
         className="mt-6 w-full rounded-xl bg-emerald-600 py-3 font-semibold text-white transition hover:bg-emerald-700"
       >
         Create my Workspace →

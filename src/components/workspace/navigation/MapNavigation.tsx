@@ -20,7 +20,7 @@ export default function MapNavigation() {
   }, [map]);
 
   return (
-    <div className="absolute right-6 top-6 z-[1000] flex flex-col gap-3">
+    <div className="absolute right-4 bottom-[45vh] z-[1200]">
 
       <div className="overflow-hidden rounded-2xl border border-white/40 bg-white/90 shadow-xl backdrop-blur-xl">
 

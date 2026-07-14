@@ -1,3 +1,4 @@
+import { useState } from "react";
 import AIAnalysisPanel from "./AIAnalysisPanel";
 import AIRestorationCard from "./AIRestorationCard";
 import AIStrategyPanel from "./AIStrategyPanel";
@@ -42,25 +43,54 @@ export default function ProjectInformationPanel({
         activeTool as keyof typeof workspaceConfig
       ] ?? workspaceConfig["Project Boundary"];
 
+   const [expanded, setExpanded] = useState(false);
+
   return (
-    <div
-      className="
-        h-[calc(100vh-120px)]
-        w-[320px]
-        overflow-y-auto
-        rounded-3xl
-        border
-        border-white/20
-        bg-white/90
-        p-5
-        shadow-2xl
-        backdrop-blur-xl
-        scrollbar-thin
-        scrollbar-track-transparent
-        scrollbar-thumb-gray-300
-        scrollbar-thumb-rounded-full
-      "
+<div
+  className={`
+    fixed
+    bottom-0
+    left-0
+    right-0
+    z-30
+
+    ${expanded ? "h-[82vh]" : "h-[20vh]"}
+
+    w-full
+    overflow-y-auto
+
+    rounded-t-3xl
+    border-t
+    border-white/20
+
+    bg-white/95
+    p-5
+
+    shadow-2xl
+    backdrop-blur-xl
+
+    transition-all
+
+    scrollbar-thin
+    scrollbar-track-transparent
+    scrollbar-thumb-gray-300
+    scrollbar-thumb-rounded-full
+
+    lg:static
+    lg:h-[calc(100vh-120px)]
+    lg:w-[320px]
+    lg:rounded-3xl
+    lg:border
+  `}
     >
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="mb-5 flex w-full justify-center lg:hidden"
+      >
+
+        <div className="h-1.5 w-12 rounded-full bg-gray-300" />
+
+      </button>
 
       <h2 className="text-2xl font-semibold text-gray-900">
         {activeTool}
@@ -108,60 +138,64 @@ export default function ProjectInformationPanel({
               onStart={() => setMissionState("analysis")}
             />
 
-            <div className="mt-5">
+            {expanded && (
 
-              {activeTool === "Vegetation" ? (
+              <div className="mt-5">
 
-                <VegetationPanel
-                  project={project}
-                />
+                {activeTool === "Vegetation" ? (
 
-              ) : (
-
-                <div className="space-y-1">
-
-                  <InfoRow
-                    label="Project"
-                    value={project.name ?? "Untitled Project"}
+                  <VegetationPanel
+                    project={project}
                   />
 
-                  <InfoRow
-                    label="Area"
-                    value={`${project.area ?? "--"} ha`}
-                  />
+                ) : (
 
-                  <StatusRow
-                    label="Verification"
-                    status={project.verification ?? "Satellite"}
-                  />
+                  <div className="space-y-1">
 
-                  <StatusRow
-                    label="Stage"
-                    status={project.stage ?? "Planning"}
-                  />
+                    <InfoRow
+                      label="Project"
+                      value={project.name ?? "Untitled Project"}
+                    />
 
-                  <InfoRow
-                    label="Ecosystem"
-                    value={project.assessment.ecosystem}
-                  />
+                    <InfoRow
+                      label="Area"
+                      value={`${project.area ?? "--"} ha`}
+                    />
 
-                  <InfoRow
-                    label="Restoration Potential"
-                    value={project.assessment.restorationPotential}
-                  />
+                    <StatusRow
+                      label="Verification"
+                      status={project.verification ?? "Satellite"}
+                    />
 
-                  <InfoRow
-                    label="Risk"
-                    value={project.assessment.risk}
-                  />
+                    <StatusRow
+                      label="Stage"
+                      status={project.stage ?? "Planning"}
+                    />
 
-                </div>
+                    <InfoRow
+                      label="Ecosystem"
+                      value={project.assessment.ecosystem}
+                    />
 
-              )}
+                    <InfoRow
+                      label="Restoration Potential"
+                      value={project.assessment.restorationPotential}
+                    />
 
-            </div>
+                    <InfoRow
+                      label="Risk"
+                      value={project.assessment.risk}
+                    />
 
-          </>
+                  </div>
+
+                )}
+
+              </div>
+
+            )}
+
+            </>
 
         )}
 

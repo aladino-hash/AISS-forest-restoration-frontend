@@ -85,7 +85,19 @@ export default function RestorationOnboarding() {
                 />
               ))}
           </div>
-
+          {selectedMission && (
+            <div className="mt-6">
+              <button
+                onClick={() => {
+                  setSelectedMission(null);
+                  setRestoreStarted(false);
+                }}
+                className="flex items-center gap-2 rounded-full border border-emerald-200 bg-white px-5 py-2 text-sm font-medium text-emerald-700 transition hover:bg-emerald-50"
+              >
+                ← Explore another journey
+              </button>
+            </div>
+          )}
           {selectedMission === "restore_land" && (
             <RestoreLandJourney
               restoreStarted={restoreStarted}

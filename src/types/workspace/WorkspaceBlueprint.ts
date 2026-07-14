@@ -24,7 +24,13 @@ export interface WorkspaceBlueprint {
     focusAreas?: string[];
   };
 
-  modules: WorkspaceModule[];
+  layout: {
+    header: WorkspaceModule[];
+
+    main: WorkspaceModule[];
+
+    sidebar: WorkspaceModule[];
+  };
 
   aiAgents: string[];
 

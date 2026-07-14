@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import WorkspaceExplorer from "../navigation/WorkspaceExplorer";
 import { workspaceConfig } from "../navigation/workspaceConfig";
+import MobileWorkspaceToolbar from "../navigation/MobileWorkspaceToolbar";
 
 type LayerState = {
   boundary: boolean;
@@ -46,13 +47,33 @@ export default function WorkspaceToolbar({
   }, [activeTool, setVisibleLayers]);
 
   return (
-    <div className="absolute left-6 top-24 z-[1000] flex flex-col gap-4">
+    <>
+      {/* ===========================
+          Desktop
+      =========================== */}
 
-      <WorkspaceExplorer
-        activeTool={activeTool}
-        setActiveTool={setActiveTool}
-      />
+      <div className="absolute left-6 top-24 z-[1000] hidden lg:flex flex-col gap-4">
 
-    </div>
+        <WorkspaceExplorer
+          activeTool={activeTool}
+          setActiveTool={setActiveTool}
+        />
+
+      </div>
+
+      {/* ===========================
+          Mobile
+      =========================== */}
+
+      <div className="fixed bottom-[35vh] left-0 right-0 z-[1000] lg:hidden">
+
+        <MobileWorkspaceToolbar
+          activeTool={activeTool}
+          setActiveTool={setActiveTool}
+        />
+
+      </div>
+
+    </>
   );
 }

@@ -1,18 +1,41 @@
 import { useLandscapeContext } from "./context/LandscapeContext";
+import { useWorkspaceSession } from "@/components/workspace/core/context/WorkspaceSessionContext";
 
 export default function LandscapeOverview() {
   const { selectedLandscape } = useLandscapeContext();
+  const { session } = useWorkspaceSession();
+
+  if (!session) return null;
+
+  const { profile } = session;
 
   return (
     <section className="rounded-3xl border border-emerald-100 bg-white p-8 shadow-sm">
 
       <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-600">
-        Restoration Intelligence Workspace
+        {profile.workspaceName}
       </p>
 
       <h1 className="mt-3 text-4xl font-bold text-gray-900">
         {selectedLandscape.name}
       </h1>
+
+      <div className="mt-4 flex flex-wrap gap-3">
+
+        <span className="rounded-full bg-emerald-100 px-4 py-2 text-sm font-medium text-emerald-700">
+          {profile.organizationType}
+        </span>
+
+        {profile.focusAreas.map((focus) => (
+          <span
+            key={focus}
+            className="rounded-full bg-blue-100 px-4 py-2 text-sm font-medium text-blue-700"
+          >
+            {focus}
+          </span>
+        ))}
+
+      </div>
 
       <div className="mt-4 flex items-center gap-3">
 
