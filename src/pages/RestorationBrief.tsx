@@ -4,11 +4,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import RestorationHero from "@/components/restorationBrief/RestorationHero";
 import RestorationVerdict from "@/components/restorationBrief/RestorationVerdict";
 import RestorationJourney from "@/components/restorationBrief/RestorationJourney";
-import StepLandOverview from "@/components/restorationBrief/steps/StepLandOverview";
 import AssessmentProgress from "@/components/restorationBrief/AssessmentProgress";
 
-import { buildRestorationAssessment } from "@/lib/recommendations/builders/buildRestorationAssessment";
-import { generateRestorationVerdict } from "@/lib/intelligence/ecological/restorationVerdict";
+import StepLandOverview from "@/components/restorationBrief/steps/StepLandOverview";
 import StepDiagnosis from "@/components/restorationBrief/steps/StepDiagnosis";
 import StepPriorities from "@/components/restorationBrief/steps/StepPriorities";
 import StepStrategy from "@/components/restorationBrief/steps/StepStrategy";
@@ -16,15 +14,25 @@ import StepSpecies from "@/components/restorationBrief/steps/StepSpecies";
 import StepImpact from "@/components/restorationBrief/steps/StepImpact";
 import StepCreateProject from "@/components/restorationBrief/steps/StepCreateProject";
 
+import { buildRestorationAssessment } from "@/lib/recommendations/builders/buildRestorationAssessment";
+import { generateRestorationVerdict } from "@/lib/intelligence/ecological/restorationVerdict";
+
 export default function RestorationBrief() {
   const location = useLocation();
   const navigate = useNavigate();
 
   const restorationData = location.state ?? {};
+  const polygonAnalysis = restorationData.polygonAnalysis;
 
-  const assessment = buildRestorationAssessment(
-    restorationData.polygonAnalysis
-  );
+  // 🧠 New AI output
+  const brief = polygonAnalysis?.restoration_brief;
+
+  console.log("RESTORATION BRIEF:", brief);
+  console.log("RECOMMENDED SPECIES:", brief?.recommended_species);
+
+  // 🔄 Temporary compatibility layer.
+  // Steps 2–7 still use the old assessment builder.
+  const assessment = buildRestorationAssessment(polygonAnalysis);
 
   const verdict = generateRestorationVerdict(
     assessment.restorationPotential
@@ -51,36 +59,31 @@ export default function RestorationBrief() {
 
           {step === 1 && (
             <StepLandOverview
-              area={assessment.area}
-              ecosystem={assessment.ecosystem}
-              risk={assessment.risk}
-              restorationPotential={assessment.restorationPotential}
+              overview={brief?.landscape_overview}
             />
           )}
 
           {step === 2 && (
             <StepDiagnosis
-              ecologicalSummary={assessment.ecologicalSummary}
+              diagnosis={brief?.landscape_diagnosis}
             />
           )}
 
           {step === 3 && (
             <StepPriorities
-              restorationObjectives={assessment.restorationObjectives}
+              priorities={brief?.restoration_priorities}
             />
           )}
 
           {step === 4 && (
             <StepStrategy
-              recommendedAgroforestrySystems={
-                assessment.recommendedAgroforestrySystems
-              }
+              strategy={brief?.restoration_strategy}
             />
           )}
 
           {step === 5 && (
             <StepSpecies
-              recommendedSpecies={assessment.recommendedSpecies}
+              species={brief?.recommended_species}
             />
           )}
 
@@ -93,38 +96,32 @@ export default function RestorationBrief() {
           {step === 7 && (
             <StepCreateProject
               onCreateProject={() => {
-
                 navigate("/restoration", {
                   state: {
                     project: {
                       id: crypto.randomUUID(),
-
                       name: "Curimaná Restoration Project",
 
                       area:
-                        restorationData.polygonAnalysis?.area_hectares ??
-                        restorationData.polygonAnalysis?.areaHectares ??
+                        polygonAnalysis?.area_hectares ??
+                        polygonAnalysis?.areaHectares ??
                         "--",
 
                       verification: "Satellite",
-
                       createdAt: new Date().toISOString(),
 
                       polygon: restorationData.polygon,
-
-                      polygonAnalysis: restorationData.polygonAnalysis,
+                      polygonAnalysis,
 
                       assessment,
                     },
                   },
                 });
-
               }}
             />
           )}
 
           <div className="mt-10 flex justify-end">
-
             <button
               onClick={() => {
                 if (step < 7) {
@@ -135,7 +132,6 @@ export default function RestorationBrief() {
             >
               Continue →
             </button>
-
           </div>
 
         </RestorationJourney>

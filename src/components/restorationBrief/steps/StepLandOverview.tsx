@@ -1,16 +1,24 @@
 interface StepLandOverviewProps {
-  area: string;
-  ecosystem: string;
-  risk: string;
-  restorationPotential: string;
+  overview?: {
+    area?: string;
+    ecosystem?: string;
+    risk?: string;
+    restoration_potential?: string;
+  };
 }
 
 export default function StepLandOverview({
-  area,
-  ecosystem,
-  risk,
-  restorationPotential,
+  overview,
 }: StepLandOverviewProps) {
+
+  const area = overview?.area ?? "Calculating...";
+  const ecosystem = overview?.ecosystem ?? "Unknown";
+  const risk = overview?.risk ?? "Unknown";
+  const restorationPotential =
+    overview?.restoration_potential ?? "Unknown";
+
+  console.log("Landscape Overview", overview);
+
   return (
     <section>
 
