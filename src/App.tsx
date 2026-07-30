@@ -22,6 +22,7 @@ import RestorationWorkspace from "./pages/RestorationWorkspace";
 import RestorationHub from "./pages/RestorationHub";
 import RestorationOnboarding from "@/pages/RestorationOnboarding";
 import RestorationIntelligenceWorkspace from "@/pages/RestorationIntelligenceWorkspace";
+import SpeciesPrototype from "./pages/SpeciesPrototype";
 
 const queryClient = new QueryClient();
 
@@ -96,6 +97,11 @@ const App = () => (
           <Route
             path="/workspace/intelligence"
             element={<RestorationIntelligenceWorkspace />}
+          />
+
+          <Route
+              path="/species-prototype"
+              element={<SpeciesPrototype />}
           />
 
           {/* Dashboard Pages */}

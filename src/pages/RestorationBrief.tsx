@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import RestorationHero from "@/components/restorationBrief/RestorationHero";
@@ -10,6 +10,7 @@ import StepLandOverview from "@/components/restorationBrief/steps/StepLandOvervi
 import StepDiagnosis from "@/components/restorationBrief/steps/StepDiagnosis";
 import StepPriorities from "@/components/restorationBrief/steps/StepPriorities";
 import StepStrategy from "@/components/restorationBrief/steps/StepStrategy";
+import StepProductiveSpecies from "@/components/restorationBrief/steps/StepProductiveSpecies";
 import StepSpecies from "@/components/restorationBrief/steps/StepSpecies";
 import StepImpact from "@/components/restorationBrief/steps/StepImpact";
 import StepCreateProject from "@/components/restorationBrief/steps/StepCreateProject";
@@ -24,14 +25,17 @@ export default function RestorationBrief() {
   const restorationData = location.state ?? {};
   const polygonAnalysis = restorationData.polygonAnalysis;
 
-  // 🧠 New AI output
+  // 🧠 AI restoration brief
   const brief = polygonAnalysis?.restoration_brief;
+  const impactSummary = polygonAnalysis?.impact_summary ?? "";
+  const executiveSummary = polygonAnalysis?.executive_summary ?? "";
+  const farmerGuidance = polygonAnalysis?.farmer_guidance ?? "";
 
-  console.log("RESTORATION BRIEF:", brief);
+  console.log("RESTORATION PRIORITIES:", brief?.restoration_priorities);
+  console.log("STEP 3:", brief?.restoration_priorities);
   console.log("RECOMMENDED SPECIES:", brief?.recommended_species);
 
-  // 🔄 Temporary compatibility layer.
-  // Steps 2–7 still use the old assessment builder.
+  // Temporary compatibility layer
   const assessment = buildRestorationAssessment(polygonAnalysis);
 
   const verdict = generateRestorationVerdict(
@@ -40,102 +44,164 @@ export default function RestorationBrief() {
 
   const [step, setStep] = useState(1);
 
+  const journeyRef = useRef<HTMLDivElement>(null);
+
+  const productiveSpecies = brief?.productive_species;
+
+  const [selectedProductiveSpecies, setSelectedProductiveSpecies] = useState<
+    string[]
+  >([]);
+
+  const handleToggleProductiveSpecies = (id: string) => {
+    setSelectedProductiveSpecies((current) =>
+      current.includes(id)
+        ? current.filter((item) => item !== id)
+        : [...current, id]
+    );
+  };
+
+  const [selectedRestorationSpecies, setSelectedRestorationSpecies] = useState<string[]>([]);
+
+  const handleToggleRestorationSpecies = (id: string) => {
+    setSelectedRestorationSpecies((current) =>
+      current.includes(id)
+        ? current.filter((item) => item !== id)
+        : [...current, id]
+    );
+  };
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-emerald-50 to-white">
-      <div className="mx-auto max-w-6xl px-6 py-12">
+      <div className="mx-auto max-w-6xl px-6 pt-4 pb-12">
+        {/* <RestorationHero /> */}
 
-        <RestorationHero />
+        {/* <RestorationVerdict verdict={verdict} /> */}
 
-        <RestorationVerdict
-          verdict={verdict}
-        />
-
-        <RestorationJourney>
-
-          <AssessmentProgress
-            currentStep={step}
-            totalSteps={7}
-          />
-
-          {step === 1 && (
-            <StepLandOverview
-              overview={brief?.landscape_overview}
+        <div ref={journeyRef}>
+          <RestorationJourney>
+            <AssessmentProgress
+              currentStep={step}
+              totalSteps={8}
             />
-          )}
 
-          {step === 2 && (
-            <StepDiagnosis
-              diagnosis={brief?.landscape_diagnosis}
-            />
-          )}
+            {/* STEP 1 */}
 
-          {step === 3 && (
-            <StepPriorities
-              priorities={brief?.restoration_priorities}
-            />
-          )}
+            {step === 1 && (
+              <StepLandOverview
+                overview={brief?.landscape_overview}
+              />
+            )}
 
-          {step === 4 && (
-            <StepStrategy
-              strategy={brief?.restoration_strategy}
-            />
-          )}
+            {/* STEP 2 */}
 
-          {step === 5 && (
-            <StepSpecies
-              species={brief?.recommended_species}
-            />
-          )}
+            {step === 2 && (
+              <StepDiagnosis
+                diagnosis={brief?.landscape_diagnosis}
+              />
+            )}
 
-          {step === 6 && (
-            <StepImpact
-              restorationPotential={assessment.restorationPotential}
-            />
-          )}
+            {/* STEP 3 */}
 
-          {step === 7 && (
-            <StepCreateProject
-              onCreateProject={() => {
-                navigate("/restoration", {
-                  state: {
-                    project: {
-                      id: crypto.randomUUID(),
-                      name: "Curimaná Restoration Project",
+            {step === 3 && (
+              <StepPriorities
+                priorities={brief?.restoration_priorities}
+              />
+            )}
 
-                      area:
-                        polygonAnalysis?.area_hectares ??
-                        polygonAnalysis?.areaHectares ??
-                        "--",
+            {/* STEP 4 */}
 
-                      verification: "Satellite",
-                      createdAt: new Date().toISOString(),
+            {step === 4 && (
+              <StepStrategy
+                strategy={brief?.restoration_strategy}
+              />
+            )}
 
-                      polygon: restorationData.polygon,
-                      polygonAnalysis,
+            {/* STEP 5 */}
 
-                      assessment,
+            {step === 5 && (
+              <StepProductiveSpecies
+                species={productiveSpecies}
+                selectedSpecies={selectedProductiveSpecies}
+                onToggleSpecies={handleToggleProductiveSpecies}
+              />
+            )}
+
+            {/* STEP 6 */}
+
+            {step === 6 && (
+              <StepSpecies
+                species={brief?.recommended_species}
+                selectedSpecies={selectedRestorationSpecies}
+                onToggleSpecies={handleToggleRestorationSpecies}
+              />
+            )}
+
+            {/* STEP 7 */}
+
+            {step === 7 && (
+              <StepImpact
+                restorationPotential={polygonAnalysis.restoration_potential}
+                productiveSpecies={selectedProductiveSpecies}
+                restorationSpecies={selectedRestorationSpecies}
+                impactSummary={impactSummary}
+              />
+            )}
+
+            {/* STEP 8 */}
+
+            {step === 8 && (
+              <StepCreateProject
+                onCreateProject={() => {
+                  navigate("/restoration", {
+                    state: {
+                      project: {
+                        id: crypto.randomUUID(),
+                        name: "Curimaná Restoration Project",
+
+                        area:
+                          polygonAnalysis?.area_hectares ??
+                          polygonAnalysis?.areaHectares ??
+                          "--",
+
+                        verification: "Satellite",
+                        createdAt: new Date().toISOString(),
+
+                        polygon: restorationData.polygon,
+                        polygonAnalysis,
+
+                        assessment,
+
+                        // 🌾 Farmer selections
+                        productiveSpecies: selectedProductiveSpecies,
+                        restorationSpecies: selectedRestorationSpecies,
+                      },
                     },
-                  },
-                });
-              }}
-            />
-          )}
+                  });
+                }}
+              />
+            )}
 
-          <div className="mt-10 flex justify-end">
-            <button
-              onClick={() => {
-                if (step < 7) {
-                  setStep(step + 1);
-                }
-              }}
-              className="rounded-2xl bg-emerald-600 px-8 py-3 font-semibold text-white transition hover:bg-emerald-700"
-            >
-              Continue →
-            </button>
-          </div>
+            <div className="mt-10 flex justify-end">
+              <button
+                onClick={() => {
+                  if (step < 8) {
+                    setStep(step + 1);
 
-        </RestorationJourney>
-
+                    requestAnimationFrame(() => {
+                      journeyRef.current?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                      });
+                    });
+                  }
+                }}
+                className="rounded-2xl bg-emerald-600 px-8 py-3 font-semibold text-white transition hover:bg-emerald-700"
+              >
+                Continue →
+              </button>
+            </div>
+          </RestorationJourney>
+        </div>
       </div>
     </main>
   );
