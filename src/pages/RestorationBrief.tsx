@@ -72,7 +72,7 @@ export default function RestorationBrief() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-emerald-50 to-white">
-      <div className="mx-auto max-w-6xl px-6 pt-4 pb-12">
+      <div className="mx-auto w-full max-w-[1800px] px-8 py-6">
         {/* <RestorationHero /> */}
 
         {/* <RestorationVerdict verdict={verdict} /> */}
