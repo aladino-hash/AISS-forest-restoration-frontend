@@ -3,7 +3,7 @@ import SpeciesProfile from "./SpeciesProfile";
 import SpeciesEcology from "./ecology/SpeciesEcology";
 import SpeciesFunctions from "./functions/SpeciesFunctions";
 import SpeciesCultivation from "./cultivation/SpeciesCultivation";
-import SpeciesProducts from "./products/SpeciesProducts";
+import SpeciesProducts from "./Products/SpeciesProducts";
 import SpeciesFynos from "./fynos/SpeciesFynos";
 
 interface SpeciesWorkspaceProps {
